@@ -1,5 +1,5 @@
 [package]
-name = "rust-yew-tauri-template"
+name = "code-stats"
 version = "0.1.0"
 edition = "2021"
 
