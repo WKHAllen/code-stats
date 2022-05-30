@@ -2,7 +2,7 @@ use super::super::{services, types::AppConfig};
 use super::Message;
 use yew::prelude::*;
 
-pub enum AppMessage {
+pub enum Msg {
     SetMessage(String),
 }
 
@@ -12,7 +12,7 @@ pub struct App {
 }
 
 impl Component for App {
-    type Message = AppMessage;
+    type Message = Msg;
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
@@ -25,9 +25,7 @@ impl Component for App {
     fn view(&self, ctx: &Context<Self>) -> Html {
         if !self.init {
             let config = services::config::load_config();
-            ctx.link()
-                .callback(AppMessage::SetMessage)
-                .emit(config.message);
+            ctx.link().callback(Msg::SetMessage).emit(config.message);
         }
 
         html! {
@@ -41,7 +39,7 @@ impl Component for App {
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            AppMessage::SetMessage(text) => {
+            Msg::SetMessage(text) => {
                 self.init = true;
                 self.message = text;
                 services::config::save_config(&AppConfig {

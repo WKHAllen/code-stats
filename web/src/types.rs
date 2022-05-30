@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use std::io;
 
 pub struct AppConfig {
@@ -60,4 +61,15 @@ impl Color {
     pub fn b(&self) -> u8 {
         self.2
     }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CodeStatsRequest {
+    pub path: String,
+    pub exclude_dirs: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CodeStatsResponse {
+    pub request: CodeStatsRequest,
 }
