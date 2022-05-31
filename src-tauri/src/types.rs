@@ -7,7 +7,7 @@ pub struct CodeStatsRequest {
     pub path: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct DirStats {
     pub path: PathBuf,
     pub dirs: Vec<DirStats>,
@@ -18,7 +18,7 @@ pub struct DirStats {
     pub char_counts: HashMap<String, usize>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct FileStats {
     pub path: PathBuf,
     pub depth: usize,
