@@ -1,12 +1,34 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CodeStatsRequest {
     pub path: String,
-    pub exclude_dirs: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct DirStats {
+    pub path: PathBuf,
+    pub dirs: Vec<DirStats>,
+    pub files: Vec<FileStats>,
+    pub depth: usize,
+    pub file_counts: HashMap<String, usize>,
+    pub line_counts: HashMap<String, usize>,
+    pub char_counts: HashMap<String, usize>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct FileStats {
+    pub path: PathBuf,
+    pub depth: usize,
+    pub language: String,
+    pub line_count: usize,
+    pub char_count: usize,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CodeStatsResponse {
-    pub request: CodeStatsRequest,
+pub enum CodeStatsResponse {
+    Ok(DirStats),
+    Error,
 }

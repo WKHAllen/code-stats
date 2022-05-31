@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::io;
+use std::path::PathBuf;
 
 pub struct AppConfig {
     pub message: String,
@@ -66,10 +68,30 @@ impl Color {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CodeStatsRequest {
     pub path: String,
-    pub exclude_dirs: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CodeStatsResponse {
-    pub request: CodeStatsRequest,
+pub struct DirStats {
+    pub path: PathBuf,
+    pub dirs: Vec<DirStats>,
+    pub files: Vec<FileStats>,
+    pub depth: usize,
+    pub file_counts: HashMap<String, usize>,
+    pub line_counts: HashMap<String, usize>,
+    pub char_counts: HashMap<String, usize>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct FileStats {
+    pub path: PathBuf,
+    pub depth: usize,
+    pub language: String,
+    pub line_count: usize,
+    pub char_count: usize,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub enum CodeStatsResponse {
+    Ok(DirStats),
+    Error,
 }
