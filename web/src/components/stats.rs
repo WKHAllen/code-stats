@@ -3,7 +3,7 @@ use super::super::types::{CodeStatsResponse, DirStats};
 use std::path::PathBuf;
 use yew::prelude::*;
 
-enum CodeStatsStatus {
+enum CodeStatsState {
     Fetching,
     Completed(DirStats),
     Error,
@@ -19,7 +19,7 @@ pub struct Props {
 }
 
 pub struct Stats {
-    status: CodeStatsStatus,
+    status: CodeStatsState,
 }
 
 impl Component for Stats {
@@ -35,17 +35,17 @@ impl Component for Stats {
         });
 
         Self {
-            status: CodeStatsStatus::Fetching,
+            status: CodeStatsState::Fetching,
         }
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         match &self.status {
-            CodeStatsStatus::Fetching => html! {
+            CodeStatsState::Fetching => html! {
                 <div class="stats-fetching">{"Fetching code stats..."}</div>
             },
-            CodeStatsStatus::Completed(stats) => html! {},
-            CodeStatsStatus::Error => html! {
+            CodeStatsState::Completed(stats) => html! {},
+            CodeStatsState::Error => html! {
                 <div class="stats-error">{"An error occurred while fetching code stats. This may be because the path was invalid or because you do not have permission to access the specified files and directories."}</div>
             },
         }
@@ -54,8 +54,8 @@ impl Component for Stats {
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::SetStats(stats_response) => match stats_response {
-                CodeStatsResponse::Ok(stats) => self.status = CodeStatsStatus::Completed(stats),
-                CodeStatsResponse::Error => self.status = CodeStatsStatus::Error,
+                CodeStatsResponse::Ok(stats) => self.status = CodeStatsState::Completed(stats),
+                CodeStatsResponse::Error => self.status = CodeStatsState::Error,
             },
         }
 

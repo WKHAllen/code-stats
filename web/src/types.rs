@@ -3,9 +3,7 @@ use std::collections::HashMap;
 use std::io;
 use std::path::PathBuf;
 
-pub struct AppConfig {
-    pub message: String,
-}
+pub struct AppConfig {}
 
 pub struct Color(pub u8, pub u8, pub u8);
 
