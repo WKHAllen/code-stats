@@ -1,5 +1,5 @@
 use super::super::{services, types::AppConfig};
-use super::Message;
+use super::Stats;
 use yew::prelude::*;
 
 pub enum Msg {
@@ -31,7 +31,7 @@ impl Component for App {
         html! {
             <div class="app">
                 <div class="content">
-                    <Message text={self.message.clone()} />
+
                 </div>
             </div>
         }

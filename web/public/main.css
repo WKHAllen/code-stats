@@ -29,6 +29,8 @@ body {
   flex-grow: 1;
 }
 
-.message {
-  font-size: 2.5em;
+.stats-fetching {
+}
+
+.stats-error {
 }

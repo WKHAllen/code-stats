@@ -1,5 +1,5 @@
 mod app;
-mod message;
+mod stats;
 
 pub use app::App;
-pub use message::Message;
+pub use stats::Stats;
