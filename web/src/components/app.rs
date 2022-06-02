@@ -1,4 +1,4 @@
-use super::{Stats, TextInput};
+use super::{FileSelect, Stats};
 use std::path::PathBuf;
 use yew::prelude::*;
 
@@ -24,10 +24,7 @@ impl Component for App {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let on_set_code_stats_path = ctx
-            .link()
-            .callback(|path| Msg::SetCodeStatsPath(PathBuf::from(path)));
-        let on_show_code_stats_click = ctx.link().callback(|_| Msg::ShowCodeStats(true));
+        let on_set_code_stats_path = ctx.link().callback(Msg::SetCodeStatsPath);
         let on_hide_code_stats_click = ctx.link().callback(|_| Msg::ShowCodeStats(false));
 
         html! {
@@ -44,8 +41,7 @@ impl Component for App {
                         } else {
                             html! {
                                 <>
-                                    <TextInput value={self.code_stats_path.to_owned().to_str().unwrap().to_owned()} on_change={on_set_code_stats_path} />
-                                    <button type="button" onclick={on_show_code_stats_click}>{"Go"}</button>
+                                    <FileSelect directory={true} on_select={on_set_code_stats_path} />
                                 </>
                             }
                         }

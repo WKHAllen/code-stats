@@ -1,17 +1,11 @@
-use super::super::types::{CodeStatsRequest, CodeStatsResponse};
+use super::super::types::{CodeStatsRequest, CodeStatsResponse, CommandArgs};
 use super::command::tauri_command;
-use serde::{Deserialize, Serialize};
 use std::path::Path;
-
-#[derive(Serialize, Deserialize, Debug)]
-struct CommandArgs {
-    pub request: CodeStatsRequest,
-}
 
 pub async fn get_code_stats(path: &Path) -> CodeStatsResponse {
     let request = CommandArgs {
         request: CodeStatsRequest {
-            path: path.to_str().unwrap().to_owned(),
+            path: path.to_path_buf(),
         },
     };
 

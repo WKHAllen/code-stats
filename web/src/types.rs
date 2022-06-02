@@ -64,8 +64,8 @@ impl Color {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CodeStatsRequest {
-    pub path: String,
+pub struct CommandArgs<T> {
+    pub request: T,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -89,7 +89,30 @@ pub struct FileStats {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct CodeStatsRequest {
+    pub path: PathBuf,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub enum CodeStatsResponse {
     Ok(DirStats),
+    Error,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct DirectoryInfo {
+    pub path: PathBuf,
+    pub dirs: Vec<String>,
+    pub files: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct DirectoryInfoRequest {
+    pub path: PathBuf,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub enum DirectoryInfoResponse {
+    Ok(DirectoryInfo),
     Error,
 }

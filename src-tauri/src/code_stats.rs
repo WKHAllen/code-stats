@@ -198,7 +198,7 @@ impl DirStats {
 
 #[tauri::command(async)]
 pub fn get_code_stats(request: CodeStatsRequest) -> CodeStatsResponse {
-    let stats = DirStats::collect(Path::new(&request.path));
+    let stats = DirStats::collect(&request.path);
 
     match stats {
         Ok(value) => CodeStatsResponse::Ok(value),

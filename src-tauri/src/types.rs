@@ -3,11 +3,6 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CodeStatsRequest {
-    pub path: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
 pub struct DirStats {
     pub path: PathBuf,
     pub dirs: Vec<DirStats>,
@@ -28,7 +23,19 @@ pub struct FileStats {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct CodeStatsRequest {
+    pub path: PathBuf,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub enum CodeStatsResponse {
     Ok(DirStats),
     Error,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct DirectoryInfo {
+    pub path: PathBuf,
+    pub dirs: Vec<String>,
+    pub files: Vec<String>,
 }

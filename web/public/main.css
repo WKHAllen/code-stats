@@ -1,10 +1,75 @@
+:root {
+  --background-color: white;
+  --background-color-hover: #e0e0e0;
+  --background-color-active: #d2d2d2;
+  --background-color-disabled: #e1e1e1;
+  --text-color: black;
+  --accent-background-color: #002fff;
+  --accent-background-color-hover: #0023bc;
+  --accent-background-color-active: #001ea2;
+  --accent-background-color-disabled: #2e46b2;
+  --accent-text-color: white;
+  --shadow: 0 0 16px #7f7f7f !important;
+}
+
+::-webkit-scrollbar {
+  width: 18px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(127, 127, 127, 0.4);
+  border-radius: 100vmin;
+  border: 6px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active {
+  background-color: rgba(127, 127, 127, 0.5);
+}
+
+.scrollbox {
+  overflow: auto;
+  background: linear-gradient(white 30%, rgba(255, 255, 255, 0)),
+    linear-gradient(rgba(255, 255, 255, 0), white 70%) 0 100%,
+    radial-gradient(50% 0, farthest-side, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)),
+    radial-gradient(
+        50% 100%,
+        farthest-side,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0)
+      )
+      0 100%;
+  background: linear-gradient(white 30%, rgba(255, 255, 255, 0)),
+    linear-gradient(rgba(255, 255, 255, 0), white 70%) 0 100%,
+    radial-gradient(
+      farthest-side at 50% 0,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+        farthest-side at 50% 100%,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0)
+      )
+      0 100%;
+  background-repeat: no-repeat;
+  background-color: white;
+  background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+  background-attachment: local, local, scroll, scroll;
+}
+
 html,
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   height: 100%;
-  color: white;
-  background-color: #262f4b;
+  background-color: var(--background-color);
+  color: var(--text-color);
   overflow-y: auto;
   margin: 0;
   padding: 0;
@@ -13,6 +78,66 @@ body {
 body {
   display: flex;
   flex-direction: column;
+}
+
+.error {
+  color: red;
+}
+
+button {
+  background-color: var(--accent-background-color);
+  color: var(--accent-text-color);
+  border-radius: 100vw;
+  border: none;
+  padding: 4px 16px;
+  font-size: 0.9em;
+  outline: none;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--accent-background-color-hover);
+}
+
+button:active {
+  background-color: var(--accent-background-color-active);
+}
+
+.primary {
+  background-color: var(--accent-background-color);
+  color: var(--accent-text-color);
+}
+
+.primary:hover {
+  background-color: var(--accent-background-color-hover);
+}
+
+.primary:active {
+  background-color: var(--accent-background-color-active);
+}
+
+.primary:disabled {
+  background-color: var(--accent-background-color-disabled);
+  cursor: initial;
+}
+
+.secondary {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.secondary:hover {
+  background-color: var(--background-color-hover);
+}
+
+.secondary:active {
+  background-color: var(--background-color-active);
+}
+
+.secondary:disabled {
+  background-color: var(--background-color-disabled);
+  cursor: initial;
 }
 
 .app {
@@ -27,6 +152,38 @@ body {
   align-items: center;
   padding: 32px;
   flex-grow: 1;
+}
+
+.file-select {
+  width: 100%;
+  height: 60vh;
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.file-select-header {
+  flex-grow: 0;
+  padding: 4px 10px;
+}
+
+.file-select-body {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.file-select-footer {
+  flex-grow: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 8px;
+}
+
+.file-select-footer > * {
+  display: flex;
+  gap: 8px;
 }
 
 .stats-fetching {
