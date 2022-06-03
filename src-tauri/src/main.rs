@@ -8,11 +8,15 @@ mod dir_info;
 mod types;
 
 use code_stats::get_code_stats;
-use dir_info::get_directory_info;
+use dir_info::{get_directory_info, get_home_directory};
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![get_code_stats, get_directory_info])
+        .invoke_handler(tauri::generate_handler![
+            get_code_stats,
+            get_directory_info,
+            get_home_directory
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

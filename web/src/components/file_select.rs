@@ -65,11 +65,13 @@ impl Component for FileSelect {
             on_cancel: _on_cancel,
         } = ctx.props().clone();
 
-        let start_path_clone = start_path.clone();
-
         ctx.link().send_future(async move {
-            let dir_info = dir_info::get_directory_info(&start_path_clone).await;
-            Msg::SetDirInfo(dir_info)
+            let home_dir = dir_info::get_home_directory().await;
+
+            match home_dir {
+                Some(path) => Msg::SetCurrentPath(path),
+                None => Msg::SetCurrentPath(PathBuf::from("")),
+            }
         });
 
         Self {
@@ -109,7 +111,7 @@ impl Component for FileSelect {
                         }
                     </div>
                     <div>
-                        <button type="button" class="icon-button" onclick={on_go_to_parent_path}>
+                        <button type="button" class="icon-button" disabled={self.current_path == PathBuf::from("") || self.current_path == PathBuf::from("/")} onclick={on_go_to_parent_path}>
                             <img src="arrow-up.svg" class="icon" />
                         </button>
                     </div>
@@ -120,72 +122,80 @@ impl Component for FileSelect {
                             DirectoryInfoState::Fetching => html! {
                                 <div class="dir-info-fetching">{"Fetching directory info..."}</div>
                             },
-                            DirectoryInfoState::Completed(dir_info) => html! {
-                                <div class="dir-info">
-                                    {
-                                        dir_info.dirs.iter().map(|entry| match &selection {
-                                            Some(path) if path.to_owned() == PathBuf::from(entry) => {
-                                                html! {
-                                                    <div class="dir-info-dir file-selection" id={entry.clone()} onclick={on_set_current_path.clone()}>
-                                                        <img src="folder.svg" class="icon folder-icon" />
-                                                        <span>{entry}</span>
-                                                    </div>
+                            DirectoryInfoState::Completed(dir_info) => if dir_info.dirs.len() > 0 || dir_info.files.len() > 0 {
+                                html! {
+                                    <div class="dir-info">
+                                        {
+                                            dir_info.dirs.iter().map(|entry| match &selection {
+                                                Some(path) if path.to_owned() == PathBuf::from(entry) => {
+                                                    html! {
+                                                        <div class="dir-info-dir file-selection" id={entry.clone()} onclick={on_set_current_path.clone()}>
+                                                            <img src="folder.svg" class="icon folder-icon" />
+                                                            <span>{entry}</span>
+                                                        </div>
+                                                    }
+                                                },
+                                                _ => {
+                                                    html! {
+                                                        <div class="dir-info-dir" id={entry.clone()} onclick={on_set_selection.clone()}>
+                                                            <img src="folder.svg" class="icon folder-icon" />
+                                                            <span>{entry}</span>
+                                                        </div>
+                                                    }
                                                 }
-                                            },
-                                            _ => {
-                                                html! {
-                                                    <div class="dir-info-dir" id={entry.clone()} onclick={on_set_selection.clone()}>
-                                                        <img src="folder.svg" class="icon folder-icon" />
-                                                        <span>{entry}</span>
-                                                    </div>
+                                            }).collect::<Html>()
+                                        }
+                                        {
+                                            dir_info.files.iter().map(|entry| match &self.selection {
+                                                Some(path) if path.to_owned() == PathBuf::from(entry) => {
+                                                    html! {
+                                                        <div class="dir-info-file file-selection" id={entry.clone()} onclick={on_set_selection.clone()}>
+                                                            <img src="file.svg" class="icon file-icon" />
+                                                            <span>{entry}</span>
+                                                        </div>
+                                                    }
+                                                },
+                                                _ => {
+                                                    html! {
+                                                        <div class="dir-info-file" id={entry.clone()} onclick={on_set_selection.clone()}>
+                                                            <img src="file.svg" class="icon file-icon" />
+                                                            <span>{entry}</span>
+                                                        </div>
+                                                    }
                                                 }
-                                            }
-                                        }).collect::<Html>()
-                                    }
-                                    {
-                                        dir_info.files.iter().map(|entry| match &self.selection {
-                                            Some(path) if path.to_owned() == PathBuf::from(entry) => {
-                                                html! {
-                                                    <div class="dir-info-file file-selection" id={entry.clone()} onclick={on_set_selection.clone()}>
-                                                        <img src="file.svg" class="icon file-icon" />
-                                                        <span>{entry}</span>
-                                                    </div>
-                                                }
-                                            },
-                                            _ => {
-                                                html! {
-                                                    <div class="dir-info-file" id={entry.clone()} onclick={on_set_selection.clone()}>
-                                                        <img src="file.svg" class="icon file-icon" />
-                                                        <span>{entry}</span>
-                                                    </div>
-                                                }
-                                            }
-                                        }).collect::<Html>()
-                                    }
-                                </div>
+                                            }).collect::<Html>()
+                                        }
+                                    </div>
+                                }
+                            } else {
+                                html! {
+                                    <div class="dir-info-info">{"Empty directory"}</div>
+                                }
                             },
                             DirectoryInfoState::Error(err) => html! {
-                                <div class="error">{"An error occurred while fetching directory info: "}{err}</div>
+                                <div class="error dir-info-error">{"An error occurred while fetching directory info: "}{err}</div>
                             },
                         }
                     }
                 </div>
                 <div class="file-select-footer">
-                    <div>
+                    <div class="file-select-selection-container">
                         {
                             match &self.selection {
                                 Some(path) => html! {
-                                    <div>{"Current selection: "}{self.current_path.join(path).to_str().unwrap()}</div>
+                                    <div class="file-select-selection">{"Current selection: "}{self.current_path.join(path).to_str().unwrap()}</div>
                                 },
                                 None => html! {
-                                    <div>{"No path selected"}</div>
+                                    <div class="file-select-selection">{"No path selected"}</div>
                                 }
                             }
                         }
                     </div>
-                    <div>
-                        <button type="button" class="button secondary" onclick={on_cancel_click}>{"Cancel"}</button>
-                        <button type="button" class="button primary" disabled={self.selection.is_none()} onclick={on_select_click}>{"Select"}</button>
+                    <div class="file-select-actions-container">
+                        <div class="file-select-actions">
+                            <button type="button" class="button secondary" onclick={on_cancel_click}>{"Cancel"}</button>
+                            <button type="button" class="button primary" disabled={self.selection.is_none()} onclick={on_select_click}>{"Select"}</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -196,7 +206,12 @@ impl Component for FileSelect {
         match msg {
             Msg::SetCurrentPath(path) => {
                 self.current_path = path.clone();
-                self.selection = Some(PathBuf::from(""));
+
+                if path.to_str().unwrap() != "" && path.to_str().unwrap() != "/" {
+                    self.selection = Some(PathBuf::from(""));
+                } else {
+                    self.selection = None;
+                }
 
                 ctx.link().send_future(async move {
                     let dir_info = dir_info::get_directory_info(&path).await;
