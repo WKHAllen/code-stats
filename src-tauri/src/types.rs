@@ -30,7 +30,7 @@ pub struct CodeStatsRequest {
 #[derive(Serialize, Deserialize, Debug)]
 pub enum CodeStatsResponse {
     Ok(DirStats),
-    Error,
+    Error(String),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -38,4 +38,15 @@ pub struct DirectoryInfo {
     pub path: PathBuf,
     pub dirs: Vec<String>,
     pub files: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct DirectoryInfoRequest {
+    pub path: PathBuf,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub enum DirectoryInfoResponse {
+    Ok(DirectoryInfo),
+    Error(String),
 }

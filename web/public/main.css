@@ -2,12 +2,10 @@
   --background-color: white;
   --background-color-hover: #e0e0e0;
   --background-color-active: #d2d2d2;
-  --background-color-disabled: #e1e1e1;
   --text-color: black;
   --accent-background-color: #002fff;
   --accent-background-color-hover: #0023bc;
   --accent-background-color-active: #001ea2;
-  --accent-background-color-disabled: #2e46b2;
   --accent-text-color: white;
   --shadow: 0 0 16px #7f7f7f !important;
 }
@@ -71,6 +69,7 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   overflow-y: auto;
+  scroll-behavior: smooth;
   margin: 0;
   padding: 0;
 }
@@ -84,7 +83,7 @@ body {
   color: red;
 }
 
-button {
+button.button {
   background-color: var(--accent-background-color);
   color: var(--accent-text-color);
   border-radius: 100vw;
@@ -96,47 +95,82 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+button.button:hover {
   background-color: var(--accent-background-color-hover);
 }
 
-button:active {
+button.button:active {
   background-color: var(--accent-background-color-active);
 }
 
 .primary {
-  background-color: var(--accent-background-color);
-  color: var(--accent-text-color);
+  background-color: var(--accent-background-color) !important;
+  color: var(--accent-text-color) !important;
 }
 
 .primary:hover {
-  background-color: var(--accent-background-color-hover);
+  background-color: var(--accent-background-color-hover) !important;
 }
 
 .primary:active {
-  background-color: var(--accent-background-color-active);
+  background-color: var(--accent-background-color-active) !important;
 }
 
 .primary:disabled {
-  background-color: var(--accent-background-color-disabled);
-  cursor: initial;
+  background-color: var(--accent-background-color) !important;
+  opacity: 0.5 !important;
+  cursor: initial !important;
 }
 
 .secondary {
-  background-color: var(--background-color);
-  color: var(--text-color);
+  background-color: var(--background-color) !important;
+  color: var(--text-color) !important;
 }
 
 .secondary:hover {
-  background-color: var(--background-color-hover);
+  background-color: var(--background-color-hover) !important;
 }
 
 .secondary:active {
-  background-color: var(--background-color-active);
+  background-color: var(--background-color-active) !important;
 }
 
 .secondary:disabled {
-  background-color: var(--background-color-disabled);
+  background-color: var(--background-color) !important;
+  opacity: 0.5 !important;
+  cursor: initial !important;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-button {
+  width: 24px;
+  height: 24px;
+  background-color: rgba(127, 127, 127, 0);
+  border-radius: 100vw;
+  border: none;
+  outline: none;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-button:hover {
+  background-color: rgba(127, 127, 127, 0.3);
+}
+
+.icon-button:active {
+  background-color: rgba(127, 127, 127, 0.4);
+}
+
+.icon-button:disabled {
+  background-color: rgba(127, 127, 127, 0);
+  opacity: 0.5;
   cursor: initial;
 }
 
@@ -165,7 +199,12 @@ button:active {
 
 .file-select-header {
   flex-grow: 0;
-  padding: 4px 10px;
+  padding: 8px;
+  font-size: 0.9em;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .file-select-body {
@@ -177,13 +216,65 @@ button:active {
   flex-grow: 0;
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 8px;
+  font-size: 0.9em;
 }
 
 .file-select-footer > * {
   display: flex;
   gap: 8px;
+}
+
+.dir-info {
+  user-select: none;
+}
+
+.dir-info > * {
+  padding: 2px 8px;
+  font-size: 0.9em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.1s ease-in-out;
+}
+
+.dir-info > *:hover {
+  background-color: rgba(127, 127, 127, 0.3);
+}
+
+.dir-info > *:active {
+  background-color: rgba(127, 127, 127, 0.4);
+}
+
+.dir-info-dir {
+}
+
+.dir-info-dir > * {
+  pointer-events: none;
+}
+
+.dir-info-file {
+}
+
+.dir-info-file > * {
+  pointer-events: none;
+}
+
+.file-selection {
+  font-weight: 600;
+  background-color: rgba(127, 127, 127, 0.2);
+}
+
+.folder-icon {
+  filter: invert(65%) sepia(83%) saturate(642%) hue-rotate(9deg) brightness(91%)
+    contrast(107%);
+}
+
+.file-icon {
+  filter: invert(76%) sepia(37%) saturate(174%) hue-rotate(208deg)
+    brightness(87%) contrast(83%);
 }
 
 .stats-fetching {

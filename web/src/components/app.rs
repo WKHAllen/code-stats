@@ -35,7 +35,7 @@ impl Component for App {
                             html! {
                                 <>
                                     <Stats path={self.code_stats_path.to_owned()} />
-                                    <button type="button" onclick={on_hide_code_stats_click}>{"Back"}</button>
+                                    <button type="button" class="button" onclick={on_hide_code_stats_click}>{"Back"}</button>
                                 </>
                             }
                         } else {

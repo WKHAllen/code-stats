@@ -6,7 +6,7 @@ use yew::prelude::*;
 enum CodeStatsState {
     Fetching,
     Completed(DirStats),
-    Error,
+    Error(String),
 }
 
 pub enum Msg {
@@ -45,8 +45,8 @@ impl Component for Stats {
                 <div class="stats-fetching">{"Fetching code stats..."}</div>
             },
             CodeStatsState::Completed(stats) => html! {},
-            CodeStatsState::Error => html! {
-                <div class="stats-error">{"An error occurred while fetching code stats. This may be because the path was invalid or because you do not have permission to access the specified files and directories."}</div>
+            CodeStatsState::Error(err) => html! {
+                <div class="stats-error">{"An error occurred while fetching code stats: "}{err}</div>
             },
         }
     }
@@ -55,7 +55,7 @@ impl Component for Stats {
         match msg {
             Msg::SetStats(stats_response) => match stats_response {
                 CodeStatsResponse::Ok(stats) => self.status = CodeStatsState::Completed(stats),
-                CodeStatsResponse::Error => self.status = CodeStatsState::Error,
+                CodeStatsResponse::Error(err) => self.status = CodeStatsState::Error(err),
             },
         }
 

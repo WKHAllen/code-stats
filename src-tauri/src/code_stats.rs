@@ -202,6 +202,6 @@ pub fn get_code_stats(request: CodeStatsRequest) -> CodeStatsResponse {
 
     match stats {
         Ok(value) => CodeStatsResponse::Ok(value),
-        Err(_err) => CodeStatsResponse::Error,
+        Err(err) => CodeStatsResponse::Error(err.to_string()),
     }
 }

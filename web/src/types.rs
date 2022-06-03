@@ -96,7 +96,7 @@ pub struct CodeStatsRequest {
 #[derive(Serialize, Deserialize, Debug)]
 pub enum CodeStatsResponse {
     Ok(DirStats),
-    Error,
+    Error(String),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -114,5 +114,5 @@ pub struct DirectoryInfoRequest {
 #[derive(Serialize, Deserialize, Debug)]
 pub enum DirectoryInfoResponse {
     Ok(DirectoryInfo),
-    Error,
+    Error(String),
 }
