@@ -2,14 +2,20 @@ use super::{FileSelect, Stats};
 use std::path::PathBuf;
 use yew::prelude::*;
 
+enum AppState {
+    Home,
+    DirectorySelection,
+    DisplayingStats(PathBuf),
+}
+
 pub enum Msg {
-    ShowCodeStats(bool),
-    SetCodeStatsPath(PathBuf),
+    ShowHome,
+    SelectDirectory,
+    ShowStats(PathBuf),
 }
 
 pub struct App {
-    show_code_stats: bool,
-    code_stats_path: PathBuf,
+    state: AppState,
 }
 
 impl Component for App {
@@ -18,33 +24,50 @@ impl Component for App {
 
     fn create(_ctx: &Context<Self>) -> Self {
         Self {
-            show_code_stats: false,
-            code_stats_path: PathBuf::new(),
+            state: AppState::Home,
         }
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let on_set_code_stats_path = ctx.link().callback(Msg::SetCodeStatsPath);
-        let on_hide_code_stats_click = ctx.link().callback(|_| Msg::ShowCodeStats(false));
+        let on_show_directory_selection = ctx.link().callback(|_| Msg::SelectDirectory);
+        let on_show_stats = ctx.link().callback(Msg::ShowStats);
+        let on_cancel = ctx.link().callback(|_| Msg::ShowHome);
 
         html! {
             <div class="app">
                 <div class="content">
                     {
-                        if self.show_code_stats {
-                            html! {
-                                <>
-                                    <Stats path={self.code_stats_path.to_owned()} />
-                                    <button type="button" class="button" onclick={on_hide_code_stats_click}>{"Back"}</button>
-                                </>
-                            }
-                        } else {
-                            html! {
-                                <>
-                                    <FileSelect directory={true} on_select={on_set_code_stats_path} />
-                                </>
+                        match &self.state {
+                            AppState::Home => html! {
+                                <div class="home">
+                                    <h1 class="home-title">{"Code Statistics"}</h1>
+                                    <div class="home-description">{"View detailed language statistics for any codebase."}</div>
+                                    <button type="button" class="button primary" onclick={on_show_directory_selection}>{"Get started"}</button>
+                                </div>
+                            },
+                            AppState::DirectorySelection => html! {
+                                <FileSelect directory={true} cancelable={true} on_select={on_show_stats} {on_cancel} />
+                            },
+                            AppState::DisplayingStats(path) => html! {
+                                <div>
+                                    <Stats path={path.clone()} />
+                                </div>
                             }
                         }
+                        // if self.show_code_stats {
+                        //     html! {
+                        //         <>
+                        //             <Stats path={self.code_stats_path.to_owned()} />
+                        //             <button type="button" class="button" onclick={on_hide_code_stats_click}>{"Back"}</button>
+                        //         </>
+                        //     }
+                        // } else {
+                        //     html! {
+                        //         <>
+                        //             <FileSelect directory={true} on_select={on_set_code_stats_path} />
+                        //         </>
+                        //     }
+                        // }
                     }
                 </div>
             </div>
@@ -53,8 +76,9 @@ impl Component for App {
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::ShowCodeStats(show) => self.show_code_stats = show,
-            Msg::SetCodeStatsPath(path) => self.code_stats_path = path,
+            Msg::ShowHome => self.state = AppState::Home,
+            Msg::SelectDirectory => self.state = AppState::DirectorySelection,
+            Msg::ShowStats(path) => self.state = AppState::DisplayingStats(path),
         };
 
         true

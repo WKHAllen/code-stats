@@ -98,6 +98,7 @@ impl Component for FileSelect {
         let on_cancel_click = ctx.link().callback(|_| Msg::OnCancel);
         let on_select_click = ctx.link().callback(|_| Msg::OnSelect);
         let selection = self.selection.clone();
+        let cancelable = ctx.props().cancelable;
 
         html! {
             <div class="file-select">
@@ -193,7 +194,15 @@ impl Component for FileSelect {
                     </div>
                     <div class="file-select-actions-container">
                         <div class="file-select-actions">
-                            <button type="button" class="button secondary" onclick={on_cancel_click}>{"Cancel"}</button>
+                            {
+                                if cancelable {
+                                    html! {
+                                        <button type="button" class="button secondary" onclick={on_cancel_click}>{"Cancel"}</button>
+                                    }
+                                } else {
+                                    html! {}
+                                }
+                            }
                             <button type="button" class="button primary" disabled={self.selection.is_none()} onclick={on_select_click}>{"Select"}</button>
                         </div>
                     </div>
@@ -257,7 +266,7 @@ impl Component for FileSelect {
                 .props()
                 .clone()
                 .on_select
-                .emit(self.selection.clone().unwrap()),
+                .emit(self.current_path.join(self.selection.clone().unwrap())),
             Msg::SetDirInfo(dir_info_response) => match dir_info_response {
                 DirectoryInfoResponse::Ok(dir_info) => {
                     self.status = DirectoryInfoState::Completed(dir_info)

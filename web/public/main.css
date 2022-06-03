@@ -190,6 +190,20 @@ button.button:active {
   flex-grow: 1;
 }
 
+.home {
+  max-width: 60vw;
+  text-align: center;
+}
+
+.home-title {
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.home-description {
+  margin-bottom: 20px;
+}
+
 .file-select {
   width: 100%;
   height: 60vh;

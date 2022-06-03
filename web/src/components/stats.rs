@@ -44,9 +44,11 @@ impl Component for Stats {
             CodeStatsState::Fetching => html! {
                 <div class="stats-fetching">{"Fetching code stats..."}</div>
             },
-            CodeStatsState::Completed(stats) => html! {},
+            CodeStatsState::Completed(stats) => html! {
+                <div class="stats">{"Stats here"}</div>
+            },
             CodeStatsState::Error(err) => html! {
-                <div class="stats-error">{"An error occurred while fetching code stats: "}{err}</div>
+                <div class="error stats-error">{"An error occurred while fetching code stats: "}{err}</div>
             },
         }
     }
