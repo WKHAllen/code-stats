@@ -52,13 +52,20 @@ impl Component for Stats {
             },
             CodeStatsState::Completed(stats) => {
                 let substats = code_stats::get_stats_subpath(&stats, &self.subpath).unwrap();
+                let subpath = substats.path.strip_prefix(path.clone()).unwrap();
 
                 html! {
                     <div class="stats">
-                        <div class="stats-path">{substats.path.strip_prefix(path).unwrap().display()}</div>
-                        <LangStats label="Language breakdown by number of files" stats={substats.file_counts.clone()} />
-                        <LangStats label="Language breakdown by number of lines" stats={substats.line_counts.clone()} />
-                        <LangStats label="Language breakdown by number of characters" stats={substats.char_counts.clone()} />
+                        <div>
+                            <div>{"Language breakdown for: "}</div>
+                            <div>
+                                <span class="stats-path">{path.clone().display()}</span>
+                                <span class="stats-subpath">{"/"}{subpath.display()}</span>
+                            </div>
+                        </div>
+                        <LangStats label="Number of files" stats={substats.file_counts.clone()} />
+                        <LangStats label="Number of lines" stats={substats.line_counts.clone()} />
+                        <LangStats label="Number of characters" stats={substats.char_counts.clone()} />
                         <div class="stats-subpaths"></div>
                     </div>
                 }

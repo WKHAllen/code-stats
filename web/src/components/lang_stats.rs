@@ -36,15 +36,35 @@ impl Component for LangStats {
 
         html! {
             <div class="lang-stats">
-                {
-                    ordered_stats.iter().map(|(language, count)| {
-                        let (lang_name, lang_color) = lang::get_lang(&language);
+                <div class="lang-stats-label">
+                    <span>{label}</span>
+                    <span>{stats_total}{" in total"}</span>
+                </div>
+                <div class="lang-stats-bar">
+                    {
+                        ordered_stats.iter().map(|(language, count)| {
+                            let (_lang_name, lang_color) = lang::get_lang(&language);
 
-                        html! {
-                            <div class="lang-stats-item" style={format!("background-color: {}; width: {}%;", lang_color.to_html(), (**count as f64) / (stats_total as f64) * 100.0)}></div>
-                        }
-                    }).collect::<Html>()
-                }
+                            html! {
+                                <div class="lang-stats-bar-item" style={format!("background-color: {}; width: {}%;", lang_color.to_html(), (**count as f64) / (stats_total as f64) * 100.0)}></div>
+                            }
+                        }).collect::<Html>()
+                    }
+                </div>
+                <div class="lang-stats-langs">
+                    {
+                        ordered_stats.iter().map(|(language, count)| {
+                            let (lang_name, lang_color) = lang::get_lang(&language);
+
+                            html! {
+                                <div class="lang-stats-lang">
+                                    <div class="lang-stats-lang-color" style={format!("background-color: {};", lang_color.to_html())}></div>
+                                    <div class="lang-stats-lang-label">{format!("{}: {} ({:.1}%)", lang_name, **count, (**count as f64) / (stats_total as f64) * 100.0)}</div>
+                                </div>
+                            }
+                        }).collect::<Html>()
+                    }
+                </div>
             </div>
         }
     }

@@ -337,14 +337,62 @@ button.button:active {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  gap: 24px;
+}
+
+.stats-path {
+  opacity: 0.7;
+}
+
+.stats-subpath {
+  opacity: 0.9;
 }
 
 .lang-stats {
   flex-grow: 1;
   display: flex;
-  flex-direction: row;
-  height: 12px;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.lang-stats-item {
+.lang-stats-label {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.lang-stats-bar {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  height: 12px;
+  border-radius: 100vw;
+  overflow: hidden;
+}
+
+.lang-stats-bar-item {
+}
+
+.lang-stats-langs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  gap: 12px;
+}
+
+.lang-stats-lang {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.lang-stats-lang-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 100vw;
+}
+
+.lang-stats-lang-label {
 }
