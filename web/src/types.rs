@@ -50,6 +50,10 @@ impl Color {
         }
     }
 
+    pub fn to_html(&self) -> String {
+        format!("#{:x}{:x}{:x}", self.0, self.1, self.2)
+    }
+
     pub fn r(&self) -> u8 {
         self.0
     }
@@ -71,8 +75,8 @@ pub struct CommandArgs<T> {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct DirStats {
     pub path: PathBuf,
-    pub dirs: Vec<DirStats>,
-    pub files: Vec<FileStats>,
+    pub dirs: HashMap<String, DirStats>,
+    pub files: HashMap<String, FileStats>,
     pub depth: usize,
     pub file_counts: HashMap<String, usize>,
     pub line_counts: HashMap<String, usize>,

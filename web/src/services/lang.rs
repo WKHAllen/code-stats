@@ -1,6 +1,9 @@
 use super::super::types::Color;
 use std::io;
 
+const OTHER_LANGUAGE_NAME: &'static str = "Other";
+const OTHER_LANGUAGE_COLOR: &'static str = "#9f9f9f";
+
 pub fn language_name_from_ext(extension: &str) -> Option<String> {
     let ext = if extension.starts_with(".") {
         extension[1..].to_lowercase().to_owned()
@@ -74,4 +77,24 @@ pub fn language_color(language: &str) -> io::Result<Color> {
         "SQL" => Color::from_html("#e38c00"),
         _ => Err(io::Error::new(io::ErrorKind::NotFound, "Unknown language")),
     }
+}
+
+pub fn get_lang(extension: &str) -> (String, Color) {
+    match language_name_from_ext(extension) {
+        Some(lang) => match language_color(&lang) {
+            Ok(color) => (lang, color),
+            Err(_) => (
+                OTHER_LANGUAGE_NAME.to_owned(),
+                Color::from_html(OTHER_LANGUAGE_COLOR).unwrap(),
+            ),
+        },
+        None => (
+            OTHER_LANGUAGE_NAME.to_owned(),
+            Color::from_html(OTHER_LANGUAGE_COLOR).unwrap(),
+        ),
+    }
+}
+
+pub fn known_language(extension: &str) -> bool {
+    language_name_from_ext(extension).is_some()
 }

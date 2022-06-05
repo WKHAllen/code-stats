@@ -124,8 +124,8 @@ impl DirStats {
     ) -> io::Result<Self> {
         let mut stats = Self {
             path: path.to_path_buf(),
-            dirs: vec![],
-            files: vec![],
+            dirs: HashMap::new(),
+            files: HashMap::new(),
             depth,
             file_counts: HashMap::new(),
             line_counts: HashMap::new(),
@@ -158,7 +158,9 @@ impl DirStats {
                         *stats.char_counts.entry(language.to_string()).or_insert(0) += count;
                     }
 
-                    stats.dirs.push(dir);
+                    stats
+                        .dirs
+                        .insert(entry.file_name().to_str().unwrap().to_owned(), dir);
                 } else if entry.file_type().unwrap().is_file() {
                     let new_path_buf = path.join(Path::new(entry.file_name().to_str().unwrap()));
                     let new_path = new_path_buf.as_path();
@@ -182,7 +184,9 @@ impl DirStats {
                         .entry(file.language.to_string())
                         .or_insert(0) += file.char_count;
 
-                    stats.files.push(file);
+                    stats
+                        .files
+                        .insert(entry.file_name().to_str().unwrap().to_owned(), file);
                 }
             }
         }

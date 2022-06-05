@@ -49,25 +49,9 @@ impl Component for App {
                                 <FileSelect directory={true} cancelable={true} on_select={on_show_stats} {on_cancel} />
                             },
                             AppState::DisplayingStats(path) => html! {
-                                <div>
-                                    <Stats path={path.clone()} />
-                                </div>
+                                <Stats path={path.clone()} />
                             }
                         }
-                        // if self.show_code_stats {
-                        //     html! {
-                        //         <>
-                        //             <Stats path={self.code_stats_path.to_owned()} />
-                        //             <button type="button" class="button" onclick={on_hide_code_stats_click}>{"Back"}</button>
-                        //         </>
-                        //     }
-                        // } else {
-                        //     html! {
-                        //         <>
-                        //             <FileSelect directory={true} on_select={on_set_code_stats_path} />
-                        //         </>
-                        //     }
-                        // }
                     }
                 </div>
             </div>

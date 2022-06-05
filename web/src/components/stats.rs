@@ -1,5 +1,6 @@
 use super::super::services::code_stats;
 use super::super::types::{CodeStatsResponse, DirStats};
+use super::LangStats;
 use std::path::PathBuf;
 use yew::prelude::*;
 
@@ -11,6 +12,7 @@ enum CodeStatsState {
 
 pub enum Msg {
     SetStats(CodeStatsResponse),
+    SetSubpath(PathBuf),
 }
 
 #[derive(Properties, PartialEq, Clone)]
@@ -20,6 +22,7 @@ pub struct Props {
 
 pub struct Stats {
     status: CodeStatsState,
+    subpath: PathBuf,
 }
 
 impl Component for Stats {
@@ -36,29 +39,43 @@ impl Component for Stats {
 
         Self {
             status: CodeStatsState::Fetching,
+            subpath: PathBuf::new(),
         }
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
+        let Props { path } = ctx.props().clone();
+
         match &self.status {
             CodeStatsState::Fetching => html! {
                 <div class="stats-fetching">{"Fetching code stats..."}</div>
             },
-            CodeStatsState::Completed(stats) => html! {
-                <div class="stats">{"Stats here"}</div>
-            },
+            CodeStatsState::Completed(stats) => {
+                let substats = code_stats::get_stats_subpath(&stats, &self.subpath).unwrap();
+
+                html! {
+                    <div class="stats">
+                        <div class="stats-path">{substats.path.strip_prefix(path).unwrap().display()}</div>
+                        <LangStats label="Language breakdown by number of files" stats={substats.file_counts.clone()} />
+                        <LangStats label="Language breakdown by number of lines" stats={substats.line_counts.clone()} />
+                        <LangStats label="Language breakdown by number of characters" stats={substats.char_counts.clone()} />
+                        <div class="stats-subpaths"></div>
+                    </div>
+                }
+            }
             CodeStatsState::Error(err) => html! {
                 <div class="error stats-error">{"An error occurred while fetching code stats: "}{err}</div>
             },
         }
     }
 
-    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::SetStats(stats_response) => match stats_response {
                 CodeStatsResponse::Ok(stats) => self.status = CodeStatsState::Completed(stats),
                 CodeStatsResponse::Error(err) => self.status = CodeStatsState::Error(err),
             },
+            Msg::SetSubpath(subpath) => self.subpath = subpath,
         }
 
         true

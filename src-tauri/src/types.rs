@@ -5,8 +5,8 @@ use std::path::PathBuf;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct DirStats {
     pub path: PathBuf,
-    pub dirs: Vec<DirStats>,
-    pub files: Vec<FileStats>,
+    pub dirs: HashMap<String, DirStats>,
+    pub files: HashMap<String, FileStats>,
     pub depth: usize,
     pub file_counts: HashMap<String, usize>,
     pub line_counts: HashMap<String, usize>,
