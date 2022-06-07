@@ -1,7 +1,7 @@
 use super::super::services::code_stats;
 use super::super::types::{CodeStatsResponse, DirStats};
-use super::LangStats;
-use std::path::PathBuf;
+use super::{LangStats, LangStatsTraversal};
+use std::path::{Path, PathBuf};
 use yew::prelude::*;
 
 enum CodeStatsState {
@@ -12,7 +12,8 @@ enum CodeStatsState {
 
 pub enum Msg {
     SetStats(CodeStatsResponse),
-    SetSubpath(PathBuf),
+    TraverseDown(String),
+    TraverseUp,
 }
 
 #[derive(Properties, PartialEq, Clone)]
@@ -45,6 +46,8 @@ impl Component for Stats {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let Props { path } = ctx.props().clone();
+        let on_traverse_down = ctx.link().callback(Msg::TraverseDown);
+        let on_traverse_up = ctx.link().callback(|_| Msg::TraverseUp);
 
         match &self.status {
             CodeStatsState::Fetching => html! {
@@ -52,21 +55,22 @@ impl Component for Stats {
             },
             CodeStatsState::Completed(stats) => {
                 let substats = code_stats::get_stats_subpath(&stats, &self.subpath).unwrap();
-                let subpath = substats.path.strip_prefix(path.clone()).unwrap();
 
                 html! {
-                    <div class="stats">
-                        <div>
-                            <div>{"Language breakdown for: "}</div>
+                    <div class="stats-container">
+                        <div class="stats">
                             <div>
-                                <span class="stats-path">{path.clone().display()}</span>
-                                <span class="stats-subpath">{"/"}{subpath.display()}</span>
+                                <div>{"Language breakdown for: "}</div>
+                                <div>
+                                    <span class="stats-path">{path.clone().display()}</span>
+                                    <span class="stats-subpath">{"/"}{self.subpath.display()}</span>
+                                </div>
                             </div>
+                            <LangStats label="Number of files" stats={substats.file_counts.clone()} />
+                            <LangStats label="Number of lines" stats={substats.line_counts.clone()} />
+                            <LangStats label="Number of characters" stats={substats.char_counts.clone()} />
+                            <LangStatsTraversal subpath={self.subpath.clone()} dir_stats={substats.clone()} {on_traverse_down} {on_traverse_up} />
                         </div>
-                        <LangStats label="Number of files" stats={substats.file_counts.clone()} />
-                        <LangStats label="Number of lines" stats={substats.line_counts.clone()} />
-                        <LangStats label="Number of characters" stats={substats.char_counts.clone()} />
-                        <div class="stats-subpaths"></div>
                     </div>
                 }
             }
@@ -82,7 +86,10 @@ impl Component for Stats {
                 CodeStatsResponse::Ok(stats) => self.status = CodeStatsState::Completed(stats),
                 CodeStatsResponse::Error(err) => self.status = CodeStatsState::Error(err),
             },
-            Msg::SetSubpath(subpath) => self.subpath = subpath,
+            Msg::TraverseDown(subpath) => self.subpath = self.subpath.join(subpath),
+            Msg::TraverseUp => {
+                self.subpath = self.subpath.parent().unwrap_or(Path::new("")).to_path_buf()
+            }
         }
 
         true

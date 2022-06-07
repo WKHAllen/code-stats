@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct DirStats {
     pub path: PathBuf,
     pub dirs: HashMap<String, DirStats>,
@@ -13,7 +13,7 @@ pub struct DirStats {
     pub char_counts: HashMap<String, usize>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct FileStats {
     pub path: PathBuf,
     pub depth: usize,
