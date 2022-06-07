@@ -1,5 +1,4 @@
-use super::super::services::lang;
-use super::super::types::DirStats;
+use super::super::types::{DirStats, FileStats};
 use std::path::PathBuf;
 use wasm_bindgen::{JsCast, UnwrapThrowExt};
 use web_sys::{Element, Event, MouseEvent};
@@ -31,7 +30,7 @@ impl Component for LangStatsTraversal {
     type Message = Msg;
     type Properties = Props;
 
-    fn create(ctx: &Context<Self>) -> Self {
+    fn create(_ctx: &Context<Self>) -> Self {
         Self {}
     }
 
@@ -46,6 +45,14 @@ impl Component for LangStatsTraversal {
             .link()
             .callback(move |e| Msg::TraverseDown(get_event_target_id(e)));
         let on_traverse_up = ctx.link().callback(|_| Msg::TraverseUp);
+
+        let mut sorted_dirs: Vec<(&String, &DirStats)> =
+            dir_stats.dirs.iter().map(|entry| entry).collect();
+        sorted_dirs.sort_by(|(name1, _stats1), (name2, _stats2)| name1.cmp(name2));
+
+        let mut sorted_files: Vec<(&String, &FileStats)> =
+            dir_stats.files.iter().map(|entry| entry).collect();
+        sorted_files.sort_by(|(name1, _stats1), (name2, _stats2)| name1.cmp(name2));
 
         html! {
             <div class="lang-stats-traversal">
@@ -63,9 +70,9 @@ impl Component for LangStatsTraversal {
                             html! {
                                 <div class="lang-stats-traversal-dir-info">
                                     {
-                                        dir_stats.dirs.iter().map(|(name, _stats)| {
+                                        sorted_dirs.iter().map(|(name, _stats)| {
                                             html! {
-                                                <div class="lang-stats-traversal-dir-info-dir" id={name.clone()} onclick={on_traverse_down.clone()}>
+                                                <div class="lang-stats-traversal-dir-info-dir" id={name.clone().clone()} onclick={on_traverse_down.clone()}>
                                                     <img src="folder.svg" class="icon folder-icon" />
                                                     <span>{name}</span>
                                                 </div>
@@ -73,9 +80,9 @@ impl Component for LangStatsTraversal {
                                         }).collect::<Html>()
                                     }
                                     {
-                                        dir_stats.files.iter().map(|(name, _stats)| {
+                                        sorted_files.iter().map(|(name, _stats)| {
                                             html! {
-                                                <div class="lang-stats-traversal-dir-info-file" id={name.clone()}>
+                                                <div class="lang-stats-traversal-dir-info-file" id={name.clone().clone()}>
                                                     <img src="file.svg" class="icon file-icon" />
                                                     <span>{name}</span>
                                                 </div>
