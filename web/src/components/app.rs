@@ -49,7 +49,7 @@ impl Component for App {
                                 <FileSelect directory={true} cancelable={true} on_select={on_show_stats} {on_cancel} />
                             },
                             AppState::DisplayingStats(path) => html! {
-                                <Stats path={path.clone()} />
+                                <Stats path={path.clone()} on_close={on_cancel} />
                             }
                         }
                     }

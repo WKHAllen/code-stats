@@ -19,6 +19,7 @@ pub enum Msg {
 #[derive(Properties, PartialEq, Clone)]
 pub struct Props {
     pub path: PathBuf,
+    pub on_close: Callback<()>,
 }
 
 pub struct Stats {
@@ -31,7 +32,10 @@ impl Component for Stats {
     type Properties = Props;
 
     fn create(ctx: &Context<Self>) -> Self {
-        let Props { path } = ctx.props().clone();
+        let Props {
+            path,
+            on_close: _on_close,
+        } = ctx.props().clone();
 
         ctx.link().send_future(async move {
             let stats = code_stats::get_code_stats(&path).await;
@@ -45,7 +49,7 @@ impl Component for Stats {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let Props { path } = ctx.props().clone();
+        let Props { path, on_close } = ctx.props().clone();
         let on_traverse_down = ctx.link().callback(Msg::TraverseDown);
         let on_traverse_up = ctx.link().callback(|_| Msg::TraverseUp);
 
@@ -59,11 +63,18 @@ impl Component for Stats {
                 html! {
                     <div class="stats-container">
                         <div class="stats">
-                            <div>
-                                <div>{"Language breakdown for: "}</div>
+                            <div class="stats-header">
                                 <div>
-                                    <span class="stats-path">{path.clone().display()}</span>
-                                    <span class="stats-subpath">{"/"}{self.subpath.display()}</span>
+                                    <div>{"Language breakdown for: "}</div>
+                                    <div>
+                                        <span class="stats-path">{path.clone().display()}</span>
+                                        <span class="stats-subpath">{"/"}{self.subpath.display()}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button type="button" class="icon-button" onclick={move |_| on_close.emit(())}>
+                                        <img src="xmark.svg" class="icon" />
+                                    </button>
                                 </div>
                             </div>
                             <LangStats label="Number of files" stats={substats.file_counts.clone()} />

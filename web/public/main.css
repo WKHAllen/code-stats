@@ -221,6 +221,7 @@ button.button:active {
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 8px;
 }
 
 .file-select-body {
@@ -346,6 +347,14 @@ button.button:active {
   gap: 24px;
 }
 
+.stats-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
 .stats-path {
   opacity: 0.7;
 }
@@ -420,6 +429,7 @@ button.button:active {
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 8px;
 }
 
 .lang-stats-traversal-body {
