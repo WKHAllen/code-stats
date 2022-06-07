@@ -4,6 +4,18 @@ use super::{LangStats, LangStatsTraversal};
 use std::path::{Path, PathBuf};
 use yew::prelude::*;
 
+fn remove_trailing_slash(path: &PathBuf) -> PathBuf {
+    let path_str = path.display().to_string();
+
+    if path_str.ends_with("/") {
+        let mut chars = path_str.chars();
+        chars.next_back();
+        PathBuf::from(chars.as_str().clone())
+    } else {
+        path.clone()
+    }
+}
+
 enum CodeStatsState {
     Fetching,
     Completed(DirStats),
@@ -67,7 +79,7 @@ impl Component for Stats {
                                 <div>
                                     <div>{"Language breakdown for: "}</div>
                                     <div>
-                                        <span class="stats-path">{path.clone().display()}</span>
+                                        <span class="stats-path">{remove_trailing_slash(&path).display()}</span>
                                         <span class="stats-subpath">{"/"}{self.subpath.display()}</span>
                                     </div>
                                 </div>
