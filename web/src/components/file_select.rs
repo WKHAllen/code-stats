@@ -1,16 +1,7 @@
-use super::super::services::dir_info;
+use super::super::services::{dir_info, element};
 use super::super::types::{DirectoryInfo, DirectoryInfoResponse};
 use std::path::PathBuf;
-use wasm_bindgen::{JsCast, UnwrapThrowExt};
-use web_sys::{Element, Event, MouseEvent};
 use yew::prelude::*;
-
-fn get_event_target_id(e: MouseEvent) -> String {
-    let event: Event = e.dyn_into().unwrap_throw();
-    let event_target = event.target().unwrap_throw();
-    let target: Element = event_target.dyn_into().unwrap_throw();
-    target.id()
-}
 
 enum PathSelectType {
     File,
@@ -89,12 +80,12 @@ impl Component for FileSelect {
     fn view(&self, ctx: &Context<Self>) -> Html {
         let current_path = self.current_path.clone();
         let on_set_current_path = ctx.link().callback(move |e| {
-            Msg::SetCurrentPath(current_path.join(PathBuf::from(get_event_target_id(e))))
+            Msg::SetCurrentPath(current_path.join(PathBuf::from(element::get_event_target_id(e))))
         });
         let on_go_to_parent_path = ctx.link().callback(|_| Msg::GoToParentPath);
         let on_set_selection = ctx
             .link()
-            .callback(|e| Msg::SetSelection(PathBuf::from(get_event_target_id(e))));
+            .callback(|e| Msg::SetSelection(PathBuf::from(element::get_event_target_id(e))));
         let on_cancel_click = ctx.link().callback(|_| Msg::OnCancel);
         let on_select_click = ctx.link().callback(|_| Msg::OnSelect);
         let selection = self.selection.clone();

@@ -76,7 +76,6 @@ impl Component for App {
                 self.app_config = recent_paths::add_recent_path(&self.app_config, &path);
             }
             Msg::RemoveRecentPath(path) => {
-                web_sys::console::log_1(&path.clone().to_str().unwrap().into());
                 self.app_config = recent_paths::remove_recent_path(&self.app_config, &path)
             }
         }

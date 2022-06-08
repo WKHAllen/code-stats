@@ -46,7 +46,7 @@ impl Component for LangStats {
                             let (_lang_name, lang_color) = lang::get_lang(&language);
 
                             html! {
-                                <div class="lang-stats-bar-item" style={format!("background-color: {}; width: {}%;", lang_color.to_html(), (**count as f64) / (stats_total as f64) * 100.0)}></div>
+                                <div class="lang-stats-bar-item" style={format!("background-color: {}; flex-grow: {};", lang_color.to_html(), **count)}></div>
                             }
                         }).collect::<Html>()
                     }

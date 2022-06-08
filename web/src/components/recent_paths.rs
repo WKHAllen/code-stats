@@ -1,21 +1,6 @@
+use super::super::services::element;
 use std::path::PathBuf;
-use wasm_bindgen::{JsCast, UnwrapThrowExt};
-use web_sys::{Element, Event, MouseEvent};
 use yew::prelude::*;
-
-fn get_event_target_id(e: MouseEvent) -> String {
-    let event: Event = e.dyn_into().unwrap_throw();
-    let event_target = event.target().unwrap_throw();
-    let target: Element = event_target.dyn_into().unwrap_throw();
-    target.id()
-}
-
-fn get_event_target_html(e: MouseEvent) -> String {
-    let event: Event = e.dyn_into().unwrap_throw();
-    let event_target = event.target().unwrap_throw();
-    let target: Element = event_target.dyn_into().unwrap_throw();
-    target.inner_html()
-}
 
 pub enum Msg {
     SelectPath(PathBuf),
@@ -47,10 +32,10 @@ impl Component for RecentPaths {
         } = ctx.props().clone();
         let on_select_path_click = ctx
             .link()
-            .callback(|e| Msg::SelectPath(PathBuf::from(get_event_target_html(e))));
+            .callback(|e| Msg::SelectPath(PathBuf::from(element::get_event_target_html(e))));
         let on_remove_path_click = ctx
             .link()
-            .callback(|e| Msg::RemovePath(PathBuf::from(get_event_target_id(e))));
+            .callback(|e| Msg::RemovePath(PathBuf::from(element::get_event_target_id(e))));
 
         if recent_paths.len() > 0 {
             html! {

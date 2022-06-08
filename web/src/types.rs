@@ -55,7 +55,7 @@ impl Color {
     }
 
     pub fn to_html(&self) -> String {
-        format!("#{:x}{:x}{:x}", self.0, self.1, self.2)
+        format!("#{:02x}{:02x}{:02x}", self.0, self.1, self.2)
     }
 
     pub fn r(&self) -> u8 {

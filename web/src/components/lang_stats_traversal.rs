@@ -1,15 +1,7 @@
+use super::super::services::element;
 use super::super::types::{DirStats, FileStats};
 use std::path::PathBuf;
-use wasm_bindgen::{JsCast, UnwrapThrowExt};
-use web_sys::{Element, Event, MouseEvent};
 use yew::prelude::*;
-
-fn get_event_target_id(e: MouseEvent) -> String {
-    let event: Event = e.dyn_into().unwrap_throw();
-    let event_target = event.target().unwrap_throw();
-    let target: Element = event_target.dyn_into().unwrap_throw();
-    target.id()
-}
 
 pub enum Msg {
     TraverseDown(String),
@@ -43,7 +35,7 @@ impl Component for LangStatsTraversal {
         } = ctx.props().clone();
         let on_traverse_down = ctx
             .link()
-            .callback(move |e| Msg::TraverseDown(get_event_target_id(e)));
+            .callback(move |e| Msg::TraverseDown(element::get_event_target_id(e)));
         let on_traverse_up = ctx.link().callback(|_| Msg::TraverseUp);
 
         let mut sorted_dirs: Vec<(&String, &DirStats)> =
