@@ -3,7 +3,10 @@ use std::collections::HashMap;
 use std::io;
 use std::path::PathBuf;
 
-pub struct AppConfig {}
+#[derive(Clone, Debug)]
+pub struct AppConfig {
+    pub recent_paths: Vec<PathBuf>,
+}
 
 pub struct Color(pub u8, pub u8, pub u8);
 

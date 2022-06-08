@@ -4,3 +4,4 @@ pub mod config;
 pub mod dir_info;
 pub mod lang;
 pub mod local_storage;
+pub mod recent_paths;

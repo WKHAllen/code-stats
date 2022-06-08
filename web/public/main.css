@@ -176,6 +176,10 @@ button.button:active {
   cursor: initial;
 }
 
+.icon-button .icon {
+  pointer-events: none;
+}
+
 .app {
   flex-grow: 1;
   display: flex;
@@ -486,4 +490,39 @@ button.button:active {
 
 .lang-stats-traversal-dir-info-file > * {
   pointer-events: none;
+}
+
+.path-select {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.recent-paths-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recent-paths {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-paths-path {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.recent-paths-path-name {
+  font-size: 0.9em;
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.recent-paths-path-close {
 }
