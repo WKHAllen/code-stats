@@ -36,10 +36,7 @@ impl Component for LangStats {
 
         html! {
             <div class="lang-stats">
-                <div class="lang-stats-label">
-                    <span>{label}</span>
-                    <span>{stats_total}{" in total"}</span>
-                </div>
+                <div class="lang-stats-label">{stats_total}{" "}{label}</div>
                 <div class="lang-stats-bar">
                     {
                         ordered_stats.iter().map(|(language, count)| {

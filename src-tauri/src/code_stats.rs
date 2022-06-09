@@ -4,6 +4,8 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
+const IGNORE_DIRS: &'static [&'static str] = &[".git", "node_modules", "__pycache__"];
+
 impl FileStats {
     pub fn collect(
         path: &Path,
@@ -132,7 +134,7 @@ impl DirStats {
             char_counts: HashMap::new(),
         };
 
-        if path.file_name().unwrap().to_str().unwrap() != ".git" {
+        if !IGNORE_DIRS.contains(&path.file_name().unwrap().to_str().unwrap()) {
             let entries = fs::read_dir(path.clone())?;
 
             for entry in entries.into_iter().filter_map(|e| e.ok()) {

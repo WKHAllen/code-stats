@@ -89,9 +89,9 @@ impl Component for Stats {
                                     </button>
                                 </div>
                             </div>
-                            <LangStats label="Number of files" stats={substats.file_counts.clone()} />
-                            <LangStats label="Number of lines" stats={substats.line_counts.clone()} />
-                            <LangStats label="Number of characters" stats={substats.char_counts.clone()} />
+                            <LangStats label="files" stats={substats.file_counts.clone()} />
+                            <LangStats label="lines" stats={substats.line_counts.clone()} />
+                            <LangStats label="characters" stats={substats.char_counts.clone()} />
                             <LangStatsTraversal subpath={self.subpath.clone()} dir_stats={substats.clone()} {on_traverse_down} {on_traverse_up} />
                         </div>
                     </div>

@@ -375,9 +375,6 @@ button.button:active {
 }
 
 .lang-stats-label {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
 }
 
 .lang-stats-bar {
