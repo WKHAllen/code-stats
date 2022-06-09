@@ -1,4 +1,4 @@
-use super::super::services::lang;
+use super::super::services::{format, lang};
 use std::collections::HashMap;
 use yew::prelude::*;
 
@@ -36,7 +36,7 @@ impl Component for LangStats {
 
         html! {
             <div class="lang-stats">
-                <div class="lang-stats-label">{stats_total}{" "}{label}</div>
+                <div class="lang-stats-label">{format::format_with_commas(stats_total)}{" "}{label}</div>
                 <div class="lang-stats-bar">
                     {
                         ordered_stats.iter().map(|(language, count)| {
@@ -56,7 +56,7 @@ impl Component for LangStats {
                             html! {
                                 <div class="lang-stats-lang">
                                     <div class="lang-stats-lang-color" style={format!("background-color: {};", lang_color.to_html())}></div>
-                                    <div class="lang-stats-lang-label">{format!("{}: {} ({:.1}%)", lang_name, **count, (**count as f64) / (stats_total as f64) * 100.0)}</div>
+                                    <div class="lang-stats-lang-label">{format!("{}: {} ({:.1}%)", lang_name, format::format_with_commas(**count), (**count as f64) / (stats_total as f64) * 100.0)}</div>
                                 </div>
                             }
                         }).collect::<Html>()
