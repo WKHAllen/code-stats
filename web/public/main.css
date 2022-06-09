@@ -412,6 +412,7 @@ button.button:active {
 }
 
 .lang-stats-lang-label {
+  font-size: 0.9em;
 }
 
 .lang-stats-traversal {
