@@ -359,12 +359,16 @@ button.button:active {
   gap: 8px;
 }
 
+.stats-path-container {
+  font-size: 0.9em;
+}
+
 .stats-path {
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .stats-subpath {
-  opacity: 0.9;
+  opacity: 1;
 }
 
 .lang-stats {
@@ -456,7 +460,6 @@ button.button:active {
 }
 
 .lang-stats-traversal-dir-info {
-  margin-bottom: 6px;
   user-select: none;
 }
 
@@ -479,17 +482,37 @@ button.button:active {
 }
 
 .lang-stats-traversal-dir-info-dir {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .lang-stats-traversal-dir-info-dir > * {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   pointer-events: none;
 }
 
 .lang-stats-traversal-dir-info-file {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .lang-stats-traversal-dir-info-file > * {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   pointer-events: none;
+}
+
+.lang-stats-traversal-dir-info-label {
+  gap: 4px;
 }
 
 .path-select {

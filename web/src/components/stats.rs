@@ -78,7 +78,7 @@ impl Component for Stats {
                             <div class="stats-header">
                                 <div>
                                     <div>{"Language breakdown for: "}</div>
-                                    <div>
+                                    <div class="stats-path-container">
                                         <span class="stats-path">{remove_trailing_slash(&path).display()}</span>
                                         <span class="stats-subpath">{"/"}{self.subpath.display()}</span>
                                     </div>

@@ -4,6 +4,7 @@ use std::path::PathBuf;
 
 pub const MAX_RECENT_PATHS: usize = 16;
 
+#[allow(dead_code)]
 pub fn get_recent_paths() -> Vec<PathBuf> {
     config::load_config().recent_paths
 }

@@ -1,5 +1,6 @@
-use super::super::services::element;
+use super::super::services::{code_stats, element};
 use super::super::types::{DirStats, FileStats};
+use super::LangLabel;
 use std::path::PathBuf;
 use yew::prelude::*;
 
@@ -62,21 +63,42 @@ impl Component for LangStatsTraversal {
                             html! {
                                 <div class="lang-stats-traversal-dir-info">
                                     {
-                                        sorted_dirs.iter().map(|(name, _stats)| {
+                                        sorted_dirs.iter().map(|(name, stats)| {
+                                            let primary_lang_ext = code_stats::get_dir_primary_lang(&stats);
+
                                             html! {
                                                 <div class="lang-stats-traversal-dir-info-dir" id={name.clone().clone()} onclick={on_traverse_down.clone()}>
-                                                    <img src="folder.svg" class="icon folder-icon" />
-                                                    <span>{name}</span>
+                                                    <div class="lang-stats-traversal-dir-info-label">
+                                                        <img src="folder.svg" class="icon folder-icon" />
+                                                        <span>{name}</span>
+                                                    </div>
+                                                    <div>
+                                                        {
+                                                            match primary_lang_ext {
+                                                                Some(lang_ext) => html! {
+                                                                    <LangLabel lang={lang_ext} />
+                                                                },
+                                                                None => html! {},
+                                                            }
+                                                        }
+                                                    </div>
                                                 </div>
                                             }
                                         }).collect::<Html>()
                                     }
                                     {
                                         sorted_files.iter().map(|(name, _stats)| {
+                                            let lang_ext = PathBuf::from(name).extension().unwrap_or_default().to_str().unwrap().to_owned();
+
                                             html! {
                                                 <div class="lang-stats-traversal-dir-info-file" id={name.clone().clone()}>
-                                                    <img src="file.svg" class="icon file-icon" />
-                                                    <span>{name}</span>
+                                                    <div class="lang-stats-traversal-dir-info-label">
+                                                        <img src="file.svg" class="icon file-icon" />
+                                                        <span>{name}</span>
+                                                    </div>
+                                                    <div>
+                                                        <LangLabel lang={lang_ext} />
+                                                    </div>
                                                 </div>
                                             }
                                         }).collect::<Html>()
