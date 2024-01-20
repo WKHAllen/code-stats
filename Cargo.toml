@@ -1,5 +1,5 @@
 [package]
-name = "code-stats-2"
+name = "code-stats"
 version = "0.1.0"
 edition = "2021"
 

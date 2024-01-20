@@ -31,7 +31,16 @@ pub fn Stats<'a>(cx: Scope<'a, StatsProps<'a>>) -> Element {
     use_on_create(cx, || {
         let path = cx.props.path.to_owned();
         async move {
-            _ = collect_stats(path);
+            let now = std::time::Instant::now();
+            let stats = collect_stats(path).await.unwrap();
+            let elapsed = now.elapsed();
+            let total_lines = stats
+                .stats
+                .counts
+                .values()
+                .fold(0usize, |total, current| total + current.lines);
+            dbg!(total_lines);
+            dbg!(elapsed);
         }
     });
 

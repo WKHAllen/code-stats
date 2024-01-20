@@ -2,36 +2,111 @@
 
 use super::TaskPool;
 use ignore::Walk;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::io;
 use std::path::{Path, PathBuf};
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;
+use tokio::spawn;
+use tokio::sync::mpsc::channel;
+
+/// The default task pool size.
+const TASK_POOL_SIZE: usize = 20;
+
+/// Tallied statistics for a single file.
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+pub struct FileCounts {
+    /// The number of lines in the file.
+    pub lines: usize,
+    /// The number of bytes in the file.
+    pub bytes: usize,
+}
 
 /// Code statistics for a single file.
 #[derive(Debug, Clone, PartialEq)]
 pub struct FileStats {
     /// The language of the file.
     pub language: String,
-    /// The number of lines in the file.
-    pub line_count: usize,
-    /// The number of bytes in the file.
-    pub byte_count: usize,
+    /// The tallied statistics.
+    pub counts: FileCounts,
+}
+
+/// Tallied statistics for a directory.
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+pub struct DirCounts {
+    /// The number of files written in a given language.
+    pub files: usize,
+    /// The number of lines written in a given language.
+    pub lines: usize,
+    /// The number of bytes written in a given language.
+    pub bytes: usize,
 }
 
 /// Code statistics for a directory.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct DirStats {
     /// A mapping of subdirectory names to their code statistics.
-    pub dirs: HashMap<String, DirStats>,
+    pub dirs: BTreeMap<String, DirStats>,
     /// A mapping of file names to their code statistics.
-    pub files: HashMap<String, FileStats>,
-    /// A mapping of languages to the number of files written in them.
-    pub file_counts: HashMap<String, usize>,
-    /// A mapping of languages to the number of lines written in them.
-    pub line_counts: HashMap<String, usize>,
-    /// A mapping of languages to the number of bytes written in them.
-    pub byte_counts: HashMap<String, usize>,
+    pub files: BTreeMap<String, FileStats>,
+    /// A mapping of languages to their tallied statistics.
+    pub counts: HashMap<String, DirCounts>,
+}
+
+impl DirStats {
+    /// Inserts a new directory into the data structure.
+    fn insert_dir(&mut self, path: &Path) {
+        if let Some(first) = path.iter().next().and_then(|s| s.to_str()) {
+            let rest = path.strip_prefix(first).unwrap();
+
+            self.dirs
+                .entry(first.to_owned())
+                .or_default()
+                .insert_dir(rest);
+        }
+    }
+
+    /// Inserts a new file with its statistics into the data structure.
+    fn insert_file(&mut self, path: &Path, stats: FileStats) {
+        let mut path_iter = path.iter();
+
+        if let Some(first) = path_iter.next().unwrap().to_str() {
+            match path_iter.next() {
+                None => {
+                    self.files.insert(first.to_owned(), stats);
+                }
+                Some(_) => {
+                    let rest = path.strip_prefix(first).unwrap();
+
+                    self.dirs
+                        .entry(first.to_owned())
+                        .or_default()
+                        .insert_file(rest, stats);
+                }
+            }
+        }
+    }
+
+    /// Calculates stats for the directory and updates them in-place.
+    fn tally_dir_stats(&mut self) {
+        self.dirs.values_mut().for_each(|dir| dir.tally_dir_stats());
+
+        self.files.values().for_each(|file| {
+            let entry = self.counts.entry(file.language.clone()).or_default();
+            entry.files += 1;
+            entry.lines += file.counts.lines;
+            entry.bytes += file.counts.bytes;
+        });
+
+        self.dirs.values().for_each(|dir| {
+            dir.counts.iter().for_each(|(language, counts)| {
+                let entry = self.counts.entry(language.clone()).or_default();
+                entry.files += counts.files;
+                entry.lines += counts.lines;
+                entry.bytes += counts.bytes;
+            })
+        });
+    }
 }
 
 /// Collects code statistics for a given file.
@@ -51,36 +126,28 @@ where
         .to_str()
         .unwrap()
         .to_owned();
-    let line_count = data.iter().fold(0, |total, this_char| {
+    let lines = data.iter().fold(0, |total, this_char| {
         if *this_char == b'\n' {
             total + 1
         } else {
             total
         }
     }) + 1;
-    let byte_count = data.len();
+    let bytes = data.len();
 
     Ok(FileStats {
         language,
-        line_count,
-        byte_count,
+        counts: FileCounts { lines, bytes },
     })
 }
 
-/// Collects code statistics for a given directory.
-async fn directory_stats<P>(path: P) -> io::Result<DirStats>
-where
-    P: AsRef<Path>,
-{
-    todo!()
-}
-
 /// Statistics on a codebase.
+#[derive(Debug, Clone, PartialEq)]
 pub struct CodeStats {
     /// The path to the codebase.
-    path: PathBuf,
+    pub path: PathBuf,
     /// The statistics.
-    stats: DirStats,
+    pub stats: DirStats,
 }
 
 impl CodeStats {
@@ -92,14 +159,38 @@ impl CodeStats {
         Self {
             path: path.as_ref().to_path_buf(),
             stats: DirStats {
-                dirs: HashMap::new(),
-                files: HashMap::new(),
-                file_counts: HashMap::new(),
-                line_counts: HashMap::new(),
-                byte_counts: HashMap::new(),
+                dirs: BTreeMap::new(),
+                files: BTreeMap::new(),
+                counts: HashMap::new(),
             },
         }
     }
+
+    /// Inserts a new directory into the data structure.
+    fn insert_dir(&mut self, path: &Path) {
+        let relative_path = path.strip_prefix(&self.path).unwrap();
+        self.stats.insert_dir(relative_path);
+    }
+
+    /// Inserts a new file with its statistics into the data structure.
+    fn insert_file(&mut self, path: &Path, stats: FileStats) {
+        let relative_path = path.strip_prefix(&self.path).unwrap();
+        self.stats.insert_file(relative_path, stats);
+    }
+
+    /// Calculates stats for the directory and updates them in-place.
+    fn tally_dir_stats(&mut self) {
+        self.stats.tally_dir_stats();
+    }
+}
+
+/// A code statistics item.
+#[derive(Debug, Clone, PartialEq)]
+struct StatsItem {
+    /// The full path to the item.
+    path: PathBuf,
+    /// The statistics. `None` indicates that the path is a directory.
+    stats: Option<FileStats>,
 }
 
 /// Collects code statistics for the given directory.
@@ -107,5 +198,64 @@ pub async fn collect_stats<P>(path: P) -> io::Result<CodeStats>
 where
     P: AsRef<Path>,
 {
-    todo!()
+    let path = path.as_ref();
+    let pool = TaskPool::new(TASK_POOL_SIZE);
+    let (stats_sender, mut stats_receiver) = channel::<StatsItem>(TASK_POOL_SIZE);
+
+    let stats_collection_task = spawn({
+        let path = path.to_path_buf();
+        async move {
+            let mut stats = CodeStats::new(path);
+
+            while let Some(stats_item) = stats_receiver.recv().await {
+                match stats_item.stats {
+                    Some(file_stats) => {
+                        stats.insert_file(&stats_item.path, file_stats);
+                    }
+                    None => {
+                        stats.insert_dir(&stats_item.path);
+                    }
+                }
+            }
+
+            stats.tally_dir_stats();
+            stats
+        }
+    });
+
+    for entry in Walk::new(path).flatten() {
+        let entry_path = entry.into_path();
+
+        if entry_path.is_file() {
+            let stats_sender = stats_sender.clone();
+
+            pool.queue(async move {
+                if let Ok(stats) = file_stats(&entry_path).await {
+                    stats_sender
+                        .send(StatsItem {
+                            path: entry_path,
+                            stats: Some(stats),
+                        })
+                        .await
+                        .unwrap();
+                }
+            })
+            .await;
+        } else if entry_path.is_dir() {
+            stats_sender
+                .send(StatsItem {
+                    path: entry_path,
+                    stats: None,
+                })
+                .await
+                .unwrap();
+        }
+    }
+
+    drop(stats_sender);
+    pool.finish().await;
+
+    let stats = stats_collection_task.await.unwrap();
+
+    Ok(stats)
 }

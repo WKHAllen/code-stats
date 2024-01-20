@@ -1,3 +1,5 @@
+//! An asynchronous task pool implementation.
+
 use std::future::Future;
 use std::pin::Pin;
 use tokio::spawn;
