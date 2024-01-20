@@ -1,0 +1,12 @@
+[package]
+name = "code-stats-2"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dioxus = "0.4.3"
+dioxus-desktop = "0.4.3"
+home = "0.5.9"
+ignore = "0.4"
+sysinfo = "0.30.5"
+tokio = { version = "1.35", features = ["full"] }
