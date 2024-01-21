@@ -107,6 +107,29 @@ impl DirStats {
             })
         });
     }
+
+    /// Gets a subsection of statistics given a path.
+    pub fn stats_slice<P>(&self, subpath: P) -> io::Result<&DirStats>
+    where
+        P: AsRef<Path>,
+    {
+        let subpath = subpath.as_ref();
+
+        match subpath.iter().next() {
+            Some(next_component) => {
+                let next_stats = match self.dirs.get(next_component.to_str().unwrap()) {
+                    Some(value) => Ok(value),
+                    None => Err(io::Error::new(
+                        io::ErrorKind::NotFound,
+                        "invalid directory subpath",
+                    )),
+                }?;
+                let next_subpath = subpath.strip_prefix(next_component).unwrap();
+                next_stats.stats_slice(next_subpath)
+            }
+            None => Ok(self),
+        }
+    }
 }
 
 /// Collects code statistics for a given file.
@@ -181,6 +204,14 @@ impl CodeStats {
     /// Calculates stats for the directory and updates them in-place.
     fn tally_dir_stats(&mut self) {
         self.stats.tally_dir_stats();
+    }
+
+    /// Gets a subsection of statistics given a path.
+    pub fn stats_slice<P>(&self, subpath: P) -> io::Result<&DirStats>
+    where
+        P: AsRef<Path>,
+    {
+        self.stats.stats_slice(subpath)
     }
 }
 
