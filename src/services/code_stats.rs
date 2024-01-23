@@ -1,9 +1,13 @@
 //! Code statistics services.
 
 use super::TaskPool;
+use crate::services::*;
 use ignore::Walk;
+use std::borrow::Borrow;
+use std::cmp::Ordering;
 use std::collections::{BTreeMap, HashMap};
 use std::io;
+use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;
@@ -12,6 +16,58 @@ use tokio::sync::mpsc::channel;
 
 /// The default task pool size.
 const TASK_POOL_SIZE: usize = 20;
+
+/// A wrapper around a file or directory name. This is necessary so that file
+/// and directory names will disregard case when ordering.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Name(String);
+
+impl Deref for Name {
+    type Target = String;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl Borrow<str> for Name {
+    fn borrow(&self) -> &str {
+        self.0.as_str()
+    }
+}
+
+impl Borrow<String> for Name {
+    fn borrow(&self) -> &String {
+        &self.0
+    }
+}
+
+impl From<&str> for Name {
+    fn from(value: &str) -> Self {
+        Self(value.to_owned())
+    }
+}
+
+impl From<String> for Name {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
+
+impl PartialOrd for Name {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Name {
+    fn cmp(&self, other: &Self) -> Ordering {
+        match self.0.to_lowercase().cmp(&other.0.to_lowercase()) {
+            Ordering::Equal => self.0.cmp(other),
+            other => other,
+        }
+    }
+}
 
 /// Tallied statistics for a single file.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
@@ -46,9 +102,9 @@ pub struct DirCounts {
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct DirStats {
     /// A mapping of subdirectory names to their code statistics.
-    pub dirs: BTreeMap<String, DirStats>,
+    pub dirs: BTreeMap<Name, DirStats>,
     /// A mapping of file names to their code statistics.
-    pub files: BTreeMap<String, FileStats>,
+    pub files: BTreeMap<Name, FileStats>,
     /// A mapping of languages to their tallied statistics.
     pub counts: HashMap<String, DirCounts>,
 }
@@ -60,7 +116,7 @@ impl DirStats {
             let rest = path.strip_prefix(first).unwrap();
 
             self.dirs
-                .entry(first.to_owned())
+                .entry(Name::from(first))
                 .or_default()
                 .insert_dir(rest);
         }
@@ -73,13 +129,13 @@ impl DirStats {
         if let Some(first) = path_iter.next().unwrap().to_str() {
             match path_iter.next() {
                 None => {
-                    self.files.insert(first.to_owned(), stats);
+                    self.files.insert(Name::from(first), stats);
                 }
                 Some(_) => {
                     let rest = path.strip_prefix(first).unwrap();
 
                     self.dirs
-                        .entry(first.to_owned())
+                        .entry(Name::from(first))
                         .or_default()
                         .insert_file(rest, stats);
                 }
@@ -117,7 +173,8 @@ impl DirStats {
 
         match subpath.iter().next() {
             Some(next_component) => {
-                let next_stats = match self.dirs.get(next_component.to_str().unwrap()) {
+                let next_stats = match self.dirs.get(&Name::from(next_component.to_str().unwrap()))
+                {
                     Some(value) => Ok(value),
                     None => Err(io::Error::new(
                         io::ErrorKind::NotFound,
@@ -128,6 +185,23 @@ impl DirStats {
                 next_stats.stats_slice(next_subpath)
             }
             None => Ok(self),
+        }
+    }
+
+    /// Gets the extension of the most prevalent language in the directory.
+    pub fn primary_language(&self) -> Option<&str> {
+        let mut stats_vec = self.counts.iter().collect::<Vec<_>>();
+        stats_vec.sort_by_key(|(_, counts)| counts.bytes);
+
+        if !stats_vec.is_empty() {
+            Some(
+                stats_vec
+                    .iter()
+                    .find_map(|(language, _)| known_language(language).then_some(language.as_str()))
+                    .unwrap_or("Other"),
+            )
+        } else {
+            None
         }
     }
 }
@@ -212,6 +286,12 @@ impl CodeStats {
         P: AsRef<Path>,
     {
         self.stats.stats_slice(subpath)
+    }
+
+    /// Gets the extension of the most prevalent language in the directory.
+    #[allow(dead_code)]
+    pub fn primary_language(&self) -> Option<&str> {
+        self.stats.primary_language()
     }
 }
 

@@ -384,6 +384,7 @@ button.button:active {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  padding: 12px;
 }
 
 .stats-header {
@@ -498,7 +499,8 @@ button.button:active {
   user-select: none;
 }
 
-.lang-stats-traversal-dir-info > * {
+.lang-stats-traversal-dir-info-dir,
+.lang-stats-traversal-dir-info-file {
   padding: 2px 8px;
   font-size: 0.9em;
   display: flex;
@@ -508,11 +510,13 @@ button.button:active {
   transition: all 0.1s ease-in-out;
 }
 
-.lang-stats-traversal-dir-info > *:hover {
+.lang-stats-traversal-dir-info-dir:hover,
+.lang-stats-traversal-dir-info-file:hover {
   background-color: rgba(127, 127, 127, 0.3);
 }
 
-.lang-stats-traversal-dir-info > *:active {
+.lang-stats-traversal-dir-info-dir:active,
+.lang-stats-traversal-dir-info-file:active {
   background-color: rgba(127, 127, 127, 0.4);
 }
 

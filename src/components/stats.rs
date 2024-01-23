@@ -5,7 +5,7 @@ use crate::icons::*;
 use crate::services::*;
 use dioxus::prelude::*;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::{Path, PathBuf, MAIN_SEPARATOR_STR};
 
 /// The current state of the code statistics.
 enum CodeStatsState {
@@ -42,6 +42,19 @@ pub fn Stats<'a>(cx: Scope<'a, StatsProps<'a>>) -> Element {
         }
     });
 
+    let stats_path_str = cx
+        .props
+        .path
+        .iter()
+        .filter_map(|s| (s.to_str() != Some(MAIN_SEPARATOR_STR)).then_some(s.to_string_lossy()))
+        .collect::<Vec<_>>()
+        .join("/");
+    let stats_subpath_str = subpath
+        .iter()
+        .map(|s| s.to_string_lossy())
+        .collect::<Vec<_>>()
+        .join("/");
+
     match &**status {
         CodeStatsState::Fetching => {
             render! {
@@ -65,21 +78,17 @@ pub fn Stats<'a>(cx: Scope<'a, StatsProps<'a>>) -> Element {
                             class: "stats-header",
 
                             div {
-                                span {
-                                    "Language breakdown for: "
-                                }
-
                                 div {
                                     class: "stats-path-container",
 
                                     span {
                                         class: "stats-path",
-                                        cx.props.path.display().to_string()
+                                        stats_path_str
                                     }
                                     span {
                                         class: "stats-subpath",
                                         "/"
-                                        subpath.display().to_string()
+                                        stats_subpath_str
                                     }
                                 }
                             }
