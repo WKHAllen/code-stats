@@ -1,6 +1,6 @@
 //! Code stats component.
 
-use super::{Icon, LanguageStats, LanguageStatsTraversal};
+use super::{Icon, LanguageStats, LanguageStatsTraversal, Loading};
 use crate::icons::*;
 use crate::services::*;
 use dioxus::prelude::*;
@@ -58,9 +58,9 @@ pub fn Stats<'a>(cx: Scope<'a, StatsProps<'a>>) -> Element {
     match &**status {
         CodeStatsState::Fetching => {
             render! {
-                div {
+                Loading {
                     class: "stats-fetching",
-                    "Fetching code stats..."
+                    text: "Fetching code stats..."
                 }
             }
         }

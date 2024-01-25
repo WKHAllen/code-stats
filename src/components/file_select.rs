@@ -1,6 +1,6 @@
 //! File selection component.
 
-use super::{Icon, PathDisplay};
+use super::{Icon, Loading, PathDisplay};
 use crate::icons::*;
 use crate::services::*;
 use dioxus::prelude::*;
@@ -152,9 +152,9 @@ pub fn FileSelect<'a>(cx: Scope<'a, FileSelectProps<'a>>) -> Element {
 
                 match &**status {
                     DirectoryInfoState::Fetching => render! {
-                        div {
+                        Loading {
                             class: "dir-info-fetching",
-                            "Fetching directory info..."
+                            text: "Fetching directory info..."
                         }
                     },
                     DirectoryInfoState::Completed(dir_info) => if !dir_info.dirs.is_empty() || !dir_info.files.is_empty() {

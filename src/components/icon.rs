@@ -1,5 +1,6 @@
 //! An icon component.
 
+use crate::classes::*;
 use dioxus::prelude::*;
 
 /// Icon properties.
@@ -13,14 +14,11 @@ pub struct IconProps<'a> {
 
 /// Icon component.
 pub fn Icon<'a>(cx: Scope<'a, IconProps<'a>>) -> Element {
-    let classes = match cx.props.class {
-        Some(class) => format!("icon {}", class),
-        None => "icon".to_owned(),
-    };
+    let class = classes!("icon", cx.props.class);
 
     render! {
         div {
-            class: "{classes}",
+            class: "{class}",
             dangerous_inner_html: cx.props.data
         }
     }

@@ -368,6 +368,12 @@ button.button:active {
 }
 
 .stats-fetching {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  font-size: 0.9em;
 }
 
 .stats-error {
@@ -603,4 +609,86 @@ button.button:active {
 
 .path-separator {
   font-size: 0.8em;
+}
+
+.loading-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: 16px;
+}
+
+.loading-spinner-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.loading-spinner-text {
+  text-align: center;
+}
+
+.loading-spinner {
+  animation: spinner-rotate 1s linear infinite;
+}
+
+.loading-spinner-small {
+  width: 25px;
+  height: 25px;
+}
+
+.loading-spinner-medium {
+  width: 40px;
+  height: 40px;
+}
+
+.loading-spinner-large {
+  width: 60px;
+  height: 60px;
+}
+
+.loading-spinner-max {
+  width: unset;
+  height: unset;
+}
+
+.loading-spinner .spinner-path {
+  stroke: #2851ff;
+  stroke-linecap: round;
+  animation: spinner-dash-dynamic 1.5s ease-in-out infinite;
+}
+
+@keyframes spinner-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner-dash-simple {
+  0% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+}
+
+@keyframes spinner-dash-dynamic {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
 }

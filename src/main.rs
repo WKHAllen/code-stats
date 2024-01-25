@@ -5,6 +5,7 @@
 #![warn(clippy::missing_docs_in_private_items)]
 #![allow(non_snake_case)]
 
+mod classes;
 mod components;
 mod icons;
 mod services;
