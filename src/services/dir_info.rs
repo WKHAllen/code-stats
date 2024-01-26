@@ -55,7 +55,8 @@ async fn get_root_dir_info() -> io::Result<DirectoryInfo> {
                     .map(|disk| disk.mount_point().to_str().unwrap().to_owned())
                     .collect::<Vec<_>>()
             });
-            let disks = disks_handle.await.unwrap();
+            let mut disks = disks_handle.await.unwrap();
+            disks.sort();
 
             Ok(DirectoryInfo {
                 path: PathBuf::from("/"),

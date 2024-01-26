@@ -5,7 +5,7 @@ use crate::icons::*;
 use crate::services::*;
 use dioxus::prelude::*;
 use std::io;
-use std::path::{Path, PathBuf, MAIN_SEPARATOR_STR};
+use std::path::{Path, PathBuf, MAIN_SEPARATOR, MAIN_SEPARATOR_STR};
 
 /// The current state of the directory structure.
 enum DirectoryInfoState {
@@ -178,6 +178,7 @@ pub fn FileSelect<'a>(cx: Scope<'a, FileSelectProps<'a>>) -> Element {
                                     }
 
                                     let classes = classes.join(" ");
+                                    let entry_str = entry.strip_suffix(MAIN_SEPARATOR).unwrap_or(entry);
 
                                     render! {
                                         div {
@@ -189,7 +190,7 @@ pub fn FileSelect<'a>(cx: Scope<'a, FileSelectProps<'a>>) -> Element {
                                                 class: "folder-icon"
                                             }
                                             span {
-                                                entry.as_str()
+                                                entry_str
                                             }
                                         }
                                     }
