@@ -1,134 +1,134 @@
 //! Programming language services.
 
-use std::fmt::Display;
-use std::ops::Deref;
-
 /// The default name for unknown languages.
 const OTHER_LANGUAGE_NAME: &str = "Other";
 
 /// The default color for unknown languages.
 const OTHER_LANGUAGE_COLOR: &str = "#9f9f9f";
 
-/// A programming language color.
-#[derive(Debug, Clone, PartialEq)]
-pub struct LanguageColor(String);
-
-impl LanguageColor {
-    /// Creates a new language color.
-    pub fn new<S>(inner: S) -> Self
-    where
-        S: Into<String>,
-    {
-        Self(inner.into())
-    }
+/// A programming language.
+#[allow(clippy::missing_docs_in_private_items)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Language {
+    Assembly,
+    Batch,
+    C,
+    CPlusPlus,
+    CSharp,
+    Css,
+    Go,
+    Html,
+    Java,
+    JavaScript,
+    Less,
+    Lua,
+    Nim,
+    ObjectiveC,
+    Php,
+    Python,
+    Rust,
+    Sass,
+    Scss,
+    Shell,
+    Sql,
+    TypeScript,
+    Vue,
+    Unknown,
 }
 
-impl Deref for LanguageColor {
-    type Target = String;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
+impl Language {
+    /// Creates a new language instance given a file extension.
+    pub fn new(ext: &str) -> Self {
+        match ext {
+            "asm" => Self::Assembly,
+            "bat" | "cmd" => Self::Batch,
+            "c" | "h" => Self::C,
+            "cpp" | "cc" | "hpp" => Self::CPlusPlus,
+            "cs" => Self::CSharp,
+            "css" => Self::Css,
+            "go" => Self::Go,
+            "html" => Self::Html,
+            "java" => Self::Java,
+            "js" | "jsx" => Self::JavaScript,
+            "less" => Self::Less,
+            "lua" => Self::Lua,
+            "nim" => Self::Nim,
+            "m" => Self::ObjectiveC,
+            "php" => Self::Php,
+            "py" | "pyw" => Self::Python,
+            "rs" => Self::Rust,
+            "sass" => Self::Sass,
+            "scss" => Self::Scss,
+            "sh" | "bash" => Self::Shell,
+            "sql" => Self::Sql,
+            "ts" | "tsx" => Self::TypeScript,
+            "vue" => Self::Vue,
+            _ => Self::Unknown,
+        }
     }
-}
 
-impl Display for LanguageColor {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        self.0.fmt(f)
+    /// Gets whether the language is known.
+    pub fn is_known(&self) -> bool {
+        !matches!(self, Self::Unknown)
     }
-}
 
-/// Gets the name of a programming language from its file extension.
-pub fn language_name_from_ext(extension: &str) -> Option<String> {
-    let ext = extension
-        .strip_prefix('.')
-        .unwrap_or(extension)
-        .to_lowercase();
-
-    match ext.as_str() {
-        "html" => Some("HTML"),
-        "css" => Some("CSS"),
-        "scss" => Some("SCSS"),
-        "sass" => Some("Sass"),
-        "less" => Some("Less"),
-        "js" => Some("JavaScript"),
-        "jsx" => Some("JavaScript"),
-        "ts" => Some("TypeScript"),
-        "tsx" => Some("TypeScript"),
-        "vue" => Some("Vue"),
-        "py" => Some("Python"),
-        "pyw" => Some("Python"),
-        "c" => Some("C"),
-        "h" => Some("C"),
-        "cpp" => Some("C++"),
-        "cc" => Some("C++"),
-        "hpp" => Some("C++"),
-        "m" => Some("Objective-C"),
-        "cs" => Some("C#"),
-        "java" => Some("Java"),
-        "go" => Some("Go"),
-        "rs" => Some("Rust"),
-        "sh" => Some("Shell"),
-        "bash" => Some("Shell"),
-        "bat" => Some("Batch"),
-        "cmd" => Some("Batch"),
-        "php" => Some("PHP"),
-        "asm" => Some("Assembly"),
-        "lua" => Some("Lua"),
-        "nim" => Some("Nim"),
-        "sql" => Some("SQL"),
-        _ => None,
+    /// Gets the name of the language.
+    pub fn name(&self) -> &'static str {
+        match self {
+            Self::Assembly => "Assembly",
+            Self::Batch => "Batch",
+            Self::C => "C",
+            Self::CPlusPlus => "C++",
+            Self::CSharp => "C#",
+            Self::Css => "CSS",
+            Self::Go => "Go",
+            Self::Html => "HTML",
+            Self::Java => "Java",
+            Self::JavaScript => "JavaScript",
+            Self::Less => "Less",
+            Self::Lua => "Lua",
+            Self::Nim => "Nim",
+            Self::ObjectiveC => "Objective-C",
+            Self::Php => "PHP",
+            Self::Python => "Python",
+            Self::Rust => "Rust",
+            Self::Sass => "Sass",
+            Self::Scss => "SCSS",
+            Self::Shell => "Shell",
+            Self::Sql => "SQL",
+            Self::TypeScript => "TypeScript",
+            Self::Vue => "Vue",
+            Self::Unknown => OTHER_LANGUAGE_NAME,
+        }
     }
-    .map(ToOwned::to_owned)
-}
 
-/// Gets the color of a programming language.
-pub fn language_color(language: &str) -> Option<LanguageColor> {
-    match language {
-        "HTML" => Some(LanguageColor::new("#e34c26")),
-        "CSS" => Some(LanguageColor::new("#563d7c")),
-        "SCSS" => Some(LanguageColor::new("#c6538c")),
-        "Sass" => Some(LanguageColor::new("#a53b70")),
-        "Less" => Some(LanguageColor::new("#1d365d")),
-        "JavaScript" => Some(LanguageColor::new("#f1e05a")),
-        "TypeScript" => Some(LanguageColor::new("#2b7489")),
-        "Vue" => Some(LanguageColor::new("#41b883")),
-        "Python" => Some(LanguageColor::new("#3572a5")),
-        "C" => Some(LanguageColor::new("#555555")),
-        "C++" => Some(LanguageColor::new("#f34b7d")),
-        "Objective-C" => Some(LanguageColor::new("#438eff")),
-        "C#" => Some(LanguageColor::new("#178600")),
-        "Java" => Some(LanguageColor::new("#b07219")),
-        "Go" => Some(LanguageColor::new("#00add8")),
-        "Rust" => Some(LanguageColor::new("#dea584")),
-        "Shell" => Some(LanguageColor::new("#89e051")),
-        "Batch" => Some(LanguageColor::new("#c1f12e")),
-        "PHP" => Some(LanguageColor::new("#4f5d95")),
-        "Assembly" => Some(LanguageColor::new("#6e4c13")),
-        "Lua" => Some(LanguageColor::new("#000080")),
-        "Nim" => Some(LanguageColor::new("#ffc200")),
-        "SQL" => Some(LanguageColor::new("#e38c00")),
-        _ => None,
+    /// Gets the color of the language.
+    pub fn color(&self) -> &'static str {
+        match self {
+            Self::Assembly => "#6e4c13",
+            Self::Batch => "#c1f12e",
+            Self::C => "#555555",
+            Self::CPlusPlus => "#f34b7d",
+            Self::CSharp => "#178600",
+            Self::Css => "#563d7c",
+            Self::Go => "#00add8",
+            Self::Html => "#e34c26",
+            Self::Java => "#b07219",
+            Self::JavaScript => "#f1e05a",
+            Self::Less => "#1d365d",
+            Self::Lua => "#000080",
+            Self::Nim => "#ffc200",
+            Self::ObjectiveC => "#438eff",
+            Self::Php => "#4f5d95",
+            Self::Python => "#3572a5",
+            Self::Rust => "#dea584",
+            Self::Sass => "#a53b70",
+            Self::Scss => "#c6538c",
+            Self::Shell => "#89e051",
+            Self::Sql => "#e38c00",
+            Self::TypeScript => "#2b7489",
+            Self::Vue => "#41b883",
+            Self::Unknown => OTHER_LANGUAGE_COLOR,
+        }
     }
-}
-
-/// Gets the name and color of a language.
-pub fn get_language(extension: &str) -> (String, LanguageColor) {
-    match language_name_from_ext(extension) {
-        Some(lang) => match language_color(&lang) {
-            Some(color) => (lang, color),
-            None => (
-                OTHER_LANGUAGE_NAME.to_owned(),
-                LanguageColor::new(OTHER_LANGUAGE_COLOR),
-            ),
-        },
-        None => (
-            OTHER_LANGUAGE_NAME.to_owned(),
-            LanguageColor::new(OTHER_LANGUAGE_COLOR),
-        ),
-    }
-}
-
-/// Returns whether the given language is known.
-pub fn known_language(extension: &str) -> bool {
-    language_name_from_ext(extension).is_some()
 }

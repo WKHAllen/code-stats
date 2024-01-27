@@ -189,16 +189,19 @@ impl DirStats {
     }
 
     /// Gets the extension of the most prevalent language in the directory.
-    pub fn primary_language(&self) -> Option<&str> {
+    pub fn primary_language(&self) -> Option<Language> {
         let mut stats_vec = self.counts.iter().collect::<Vec<_>>();
-        stats_vec.sort_by_key(|(_, counts)| counts.bytes);
+        stats_vec.sort_by(|(_, counts1), (_, counts2)| counts2.bytes.cmp(&counts1.bytes));
 
         if !stats_vec.is_empty() {
             Some(
                 stats_vec
                     .iter()
-                    .find_map(|(language, _)| known_language(language).then_some(language.as_str()))
-                    .unwrap_or("Other"),
+                    .find_map(|(language, _)| {
+                        let lang = Language::new(language);
+                        lang.is_known().then_some(lang)
+                    })
+                    .unwrap_or(Language::Unknown),
             )
         } else {
             None
@@ -290,7 +293,7 @@ impl CodeStats {
 
     /// Gets the extension of the most prevalent language in the directory.
     #[allow(dead_code)]
-    pub fn primary_language(&self) -> Option<&str> {
+    pub fn primary_language(&self) -> Option<Language> {
         self.stats.primary_language()
     }
 }

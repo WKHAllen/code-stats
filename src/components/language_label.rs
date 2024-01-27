@@ -4,10 +4,10 @@ use crate::services::*;
 use dioxus::prelude::*;
 
 /// Language label properties.
-#[derive(Props)]
-pub struct LanguageLabelProps<'a> {
+#[derive(Props, PartialEq)]
+pub struct LanguageLabelProps {
     /// The language.
-    language: &'a str,
+    language: Language,
     /// The count for this language.
     count: Option<usize>,
     /// The total count across all languages.
@@ -15,8 +15,8 @@ pub struct LanguageLabelProps<'a> {
 }
 
 /// Programming language label component.
-pub fn LanguageLabel<'a>(cx: Scope<'a, LanguageLabelProps<'a>>) -> Element {
-    let (mut language_label, language_color) = get_language(cx.props.language);
+pub fn LanguageLabel(cx: Scope<LanguageLabelProps>) -> Element {
+    let mut language_label = cx.props.language.name().to_owned();
 
     if let Some(count) = cx.props.count {
         language_label.push_str(": ");
@@ -30,15 +30,13 @@ pub fn LanguageLabel<'a>(cx: Scope<'a, LanguageLabelProps<'a>>) -> Element {
         }
     }
 
-    let language_color_style = format!("background-color: {};", language_color);
-
     render! {
         div {
             class: "lang-stats-lang",
 
             div {
                 class: "lang-stats-lang-color",
-                style: "{language_color_style}"
+                background_color: cx.props.language.color()
             }
 
             span {

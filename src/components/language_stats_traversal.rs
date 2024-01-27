@@ -98,7 +98,7 @@ pub fn LanguageStatsTraversal<'a>(cx: Scope<'a, LanguageStatsTraversalProps<'a>>
                             })
 
                             cx.props.dir_stats.files.keys().map(|name| {
-                                let language = PathBuf::from(&**name).extension().and_then(|s| s.to_str()).unwrap_or_default().to_owned();
+                                let language = Language::new(PathBuf::from(&**name).extension().and_then(|s| s.to_str()).unwrap_or_default());
 
                                 render! {
                                     div {
@@ -118,7 +118,7 @@ pub fn LanguageStatsTraversal<'a>(cx: Scope<'a, LanguageStatsTraversalProps<'a>>
 
                                         div {
                                             LanguageLabel {
-                                                language: "{language}"
+                                                language: language
                                             }
                                         }
                                     }

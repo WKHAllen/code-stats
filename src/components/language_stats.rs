@@ -29,7 +29,9 @@ where
         .stats
         .iter()
         .filter_map(|(language, count)| {
-            known_language(language).then_some((language, (cx.props.extractor)(count)))
+            let lang = Language::new(language);
+            lang.is_known()
+                .then_some((lang, (cx.props.extractor)(count)))
         })
         .collect::<HashMap<_, _>>();
     let stats_total = filtered_stats.values().sum::<usize>();
@@ -51,17 +53,13 @@ where
             div {
                 class: "lang-stats-bar",
 
-                ordered_stats.iter().map(|(language, count)| {
-                    let (_, language_color) = get_language(language);
-                    let bar_style = format!("background-color: {}; flex-grow: {};", language_color, *count);
-
-                    render! {
-                        div {
-                            class: "lang-stats-bar-item",
-                            style: "{bar_style}"
-                        }
+                for (language, count) in &ordered_stats {
+                    div {
+                        class: "lang-stats-bar-item",
+                        background_color: language.color(),
+                        flex_grow: *count as i64
                     }
-                })
+                }
             }
 
             div {
@@ -69,7 +67,7 @@ where
 
                 for (language, count) in &ordered_stats {
                     LanguageLabel {
-                        language: language,
+                        language: *language,
                         count: *count,
                         total: stats_total
                     }
