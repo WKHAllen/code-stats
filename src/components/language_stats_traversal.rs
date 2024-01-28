@@ -57,7 +57,7 @@ pub fn LanguageStatsTraversal<'a>(cx: Scope<'a, LanguageStatsTraversalProps<'a>>
             }
 
             div {
-                class: "lang-stats-traversal-body scrollbox",
+                class: "lang-stats-traversal-body",
 
                 if !cx.props.dir_stats.dirs.is_empty() || !cx.props.dir_stats.files.is_empty() {
                     render! {

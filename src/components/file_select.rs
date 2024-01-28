@@ -148,7 +148,7 @@ pub fn FileSelect<'a>(cx: Scope<'a, FileSelectProps<'a>>) -> Element {
             }
 
             div {
-                class: "file-select-body scrollbox",
+                class: "file-select-body",
 
                 match &**status {
                     DirectoryInfoState::Fetching => render! {
